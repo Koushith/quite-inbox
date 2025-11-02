@@ -323,7 +323,8 @@ export default function SubscriptionsPage() {
       )}
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="flex-1 overflow-auto">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {groups.length === 0 ? (
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-16 text-center mt-20">
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -559,6 +560,7 @@ export default function SubscriptionsPage() {
             </div>
           </>
         )}
+        </div>
       </main>
 
       {/* Delete Confirmation Dialog */}
