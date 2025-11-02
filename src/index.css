@@ -1,0 +1,39 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+@theme {
+  /* Beautiful light theme inspired by notioly.com */
+  --color-background: #fafbfc;
+  --color-foreground: #1a202c;
+  --color-card: #ffffff;
+  --color-card-foreground: #1a202c;
+  --color-popover: #ffffff;
+  --color-popover-foreground: #1a202c;
+  --color-primary: #6366f1;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #f3f4f6;
+  --color-secondary-foreground: #1f2937;
+  --color-muted: #f9fafb;
+  --color-muted-foreground: #6b7280;
+  --color-accent: #fef3c7;
+  --color-accent-foreground: #92400e;
+  --color-destructive: #ef4444;
+  --color-destructive-foreground: #ffffff;
+  --color-success: #10b981;
+  --color-success-foreground: #ffffff;
+  --color-border: #e5e7eb;
+  --color-input: #f3f4f6;
+  --color-ring: #6366f1;
+
+  --radius: 0.75rem;
+}
+
+body {
+  background: #ffffff;
+  color: var(--color-foreground);
+  font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  font-weight: 500;
+  font-feature-settings: "rlig" 1, "calt" 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
