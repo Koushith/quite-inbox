@@ -46,8 +46,6 @@ export interface Settings {
   theme: 'light' | 'dark' | 'system'
   protectedKeywords: string[]
   protectedDomains: string[]
-  enableModifyScope: boolean
-  enableSendScope: boolean
 }
 
 export interface ScanCheckpoint {

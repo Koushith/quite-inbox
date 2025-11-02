@@ -2,14 +2,14 @@ import Dexie, { type EntityTable } from 'dexie'
 import type { SenderGroup, ActionLog, Settings, ScanCheckpoint } from '@/types'
 
 // Define the database schema
-class SubZeroDatabase extends Dexie {
+class QuiteInboxDatabase extends Dexie {
   senderGroups!: EntityTable<SenderGroup, 'id'>
   actionLog!: EntityTable<ActionLog, 'id'>
   settings!: EntityTable<Settings & { id: string }, 'id'>
   scanCheckpoint!: EntityTable<ScanCheckpoint & { id: string }, 'id'>
 
   constructor() {
-    super('SubZeroDB')
+    super('QuiteInboxDB')
 
     this.version(1).stores({
       senderGroups: 'id, domain, listId, lastSeen, messageCount',
@@ -20,7 +20,7 @@ class SubZeroDatabase extends Dexie {
   }
 }
 
-export const db = new SubZeroDatabase()
+export const db = new QuiteInboxDatabase()
 
 // Default settings
 export const defaultSettings: Settings = {
@@ -36,8 +36,6 @@ export const defaultSettings: Settings = {
     'amazon.', 'flipkart.', '.gov', 'irs.', 'healthcare.',
     'hospital.', 'clinic.', 'doctor.'
   ],
-  enableModifyScope: false,
-  enableSendScope: false,
 }
 
 // Storage helper functions

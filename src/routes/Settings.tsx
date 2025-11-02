@@ -73,20 +73,7 @@ export default function SettingsPage() {
           <p className="text-gray-600 mb-6">Manage your preferences and safety settings</p>
 
           {/* Quick Stats */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <CheckCircle2 className="w-5 h-5 text-blue-600" />
-                </div>
-                <div>
-                  <div className="text-xs font-medium text-gray-500 uppercase tracking-wider">Modify Scope</div>
-                  <div className="text-sm font-bold text-gray-900">
-                    {settings.enableModifyScope ? 'Enabled' : 'Disabled'}
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
@@ -114,63 +101,6 @@ export default function SettingsPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-          {/* Gmail Permissions - Full Width */}
-          <div className="lg:col-span-2">
-            <Card className="shadow-sm border-0 rounded-xl overflow-hidden bg-white">
-              <CardHeader className="pb-4 bg-white">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
-                    <Mail className="w-5 h-5 text-blue-600" />
-                  </div>
-                  <div>
-                    <CardTitle className="text-lg font-bold text-gray-900">Gmail Permissions</CardTitle>
-                    <p className="text-sm text-gray-600 mt-1">
-                      Control what QuitInbox can do with your Gmail account
-                    </p>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="p-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="flex items-center justify-between p-4 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border border-gray-200 hover:border-blue-300 hover:shadow-sm transition-all">
-                    <div className="flex-1">
-                      <div className="font-semibold text-gray-900 text-base flex items-center gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-blue-600" />
-                        Modify Scope
-                      </div>
-                      <div className="text-xs text-gray-600 mt-1">
-                        Archive and delete emails
-                      </div>
-                    </div>
-                    <Switch
-                      checked={settings.enableModifyScope}
-                      onCheckedChange={(checked) =>
-                        updateSettings({ enableModifyScope: checked })
-                      }
-                    />
-                  </div>
-
-                  <div className="flex items-center justify-between p-4 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border border-gray-200 hover:border-blue-300 hover:shadow-sm transition-all">
-                    <div className="flex-1">
-                      <div className="font-semibold text-gray-900 text-base flex items-center gap-2">
-                        <Mail className="w-4 h-4 text-blue-600" />
-                        Send Scope
-                      </div>
-                      <div className="text-xs text-gray-600 mt-1">
-                        Send unsubscribe emails
-                      </div>
-                    </div>
-                    <Switch
-                      checked={settings.enableSendScope}
-                      onCheckedChange={(checked) =>
-                        updateSettings({ enableSendScope: checked })
-                      }
-                    />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
 
           {/* Protected Keywords */}
           <Card className="shadow-sm border-0 rounded-xl overflow-hidden h-fit bg-white">

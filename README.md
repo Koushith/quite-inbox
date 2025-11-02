@@ -1,8 +1,8 @@
-# SubZero
+# QuiteInbox
 
 **Privacy-first, local-first Gmail subscription cleaner**
 
-SubZero helps you find, manage, and unsubscribe from email subscriptions in your Gmail inbox—without sending your data to any third-party server.
+QuiteInbox helps you find, manage, and unsubscribe from email subscriptions in your Gmail inbox—without sending your data to any third-party server.
 
 ---
 
@@ -25,7 +25,7 @@ SubZero helps you find, manage, and unsubscribe from email subscriptions in your
 
 ## Privacy Guarantees
 
-### What SubZero Does NOT Do
+### What QuiteInbox Does NOT Do
 
 - ❌ Store your email content on any server
 - ❌ Send your email metadata to third parties
@@ -33,7 +33,7 @@ SubZero helps you find, manage, and unsubscribe from email subscriptions in your
 - ❌ Track your usage
 - ❌ Sell or share your data
 
-### What SubZero DOES
+### What QuiteInbox DOES
 
 - ✅ Store minimal metadata locally in IndexedDB (sender groups, action logs, settings)
 - ✅ Use Google OAuth with PKCE for secure authentication
@@ -55,7 +55,7 @@ All data is stored locally in your browser using IndexedDB:
 
 ## Gmail OAuth Scopes
 
-SubZero uses Google OAuth 2.0 with PKCE (Proof Key for Code Exchange) for secure authentication.
+QuiteInbox uses Google OAuth 2.0 with PKCE (Proof Key for Code Exchange) for secure authentication.
 
 ### Required Scope
 
@@ -81,8 +81,8 @@ You can enable/disable optional scopes in the onboarding flow and in Settings.
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/subzero-app.git
-cd subzero-app
+git clone https://github.com/your-username/quiteinbox-app.git
+cd quiteinbox-app
 ```
 
 ### 2. Install Dependencies
@@ -101,7 +101,7 @@ npm install
 3. Navigate to **APIs & Services** > **Credentials**
 4. Click **"Create Credentials"** > **"OAuth client ID"**
 5. **Select "Desktop app"** from the Application type dropdown
-6. Name it: "SubZero Desktop Client"
+6. Name it: "QuiteInbox Desktop Client"
 7. Click **"Create"**
 8. Copy the **Client ID** (Client Secret is optional but can be included if shown)
 
@@ -156,7 +156,7 @@ Click "Sign in with Google" and authorize the requested Gmail scopes.
 
 - Select a time range (3/6/12 months, or all time)
 - Click "Start Scan"
-- SubZero will scan your inbox for subscriptions
+- QuiteInbox will scan your inbox for subscriptions
 
 ### 3. Manage Subscriptions
 
@@ -221,7 +221,7 @@ npm run lint        # Run ESLint
 
 ### Testing
 
-SubZero uses Vitest for unit testing:
+QuiteInbox uses Vitest for unit testing:
 
 ```bash
 npm run test        # Run all tests
@@ -239,7 +239,7 @@ Key test suites:
 
 ### Threat Model
 
-SubZero defends against:
+QuiteInbox defends against:
 
 - **Malicious unsubscribe links**: Verifies HTTPS for one-click unsubscribe; warns if host doesn't match sender domain
 - **Accidental data loss**: Protected keywords prevent bulk deletion of important emails
@@ -248,7 +248,7 @@ SubZero defends against:
 
 ### Limitations
 
-- SubZero cannot verify if an unsubscribe link is legitimate—only that it uses HTTPS and matches expected patterns
+- QuiteInbox cannot verify if an unsubscribe link is legitimate—only that it uses HTTPS and matches expected patterns
 - One-click unsubscribe sends a POST request; we accept 2xx/3xx responses per RFC 8058
 - Protected keywords are heuristic-based and may not catch all sensitive emails
 
@@ -260,23 +260,23 @@ Please report security vulnerabilities to: [your-email@example.com]
 
 ## FAQ
 
-### Is SubZero really free?
+### Is QuiteInbox really free?
 
-Yes, SubZero is 100% free and open-source. No paid plans, no upsells.
+Yes, QuiteInbox is 100% free and open-source. No paid plans, no upsells.
 
-### Does SubZero work with non-Gmail accounts?
+### Does QuiteInbox work with non-Gmail accounts?
 
-Not currently. SubZero uses the Gmail API and is designed specifically for Gmail accounts. IMAP support may be added in the future.
+Not currently. QuiteInbox uses the Gmail API and is designed specifically for Gmail accounts. IMAP support may be added in the future.
 
-### What happens if I delete SubZero?
+### What happens if I delete QuiteInbox?
 
-All data is stored locally in your browser's IndexedDB. If you clear your browser data or uninstall SubZero, the data is permanently deleted. You can export your data before doing so.
+All data is stored locally in your browser's IndexedDB. If you clear your browser data or uninstall QuiteInbox, the data is permanently deleted. You can export your data before doing so.
 
-### Can I use SubZero on multiple devices?
+### Can I use QuiteInbox on multiple devices?
 
 Each device stores its own local data. There's no sync between devices. You can export/import settings and action logs manually.
 
-### Does SubZero support Google Workspace accounts?
+### Does QuiteInbox support Google Workspace accounts?
 
 Yes, as long as your Workspace admin allows third-party OAuth apps and the Gmail API.
 
@@ -323,13 +323,13 @@ This project is licensed under the **Apache 2.0 License** - see the [LICENSE](LI
 
 ## Support
 
-If you find SubZero useful, please:
+If you find QuiteInbox useful, please:
 
 - ⭐ Star this repository
-- 🐛 Report bugs via [GitHub Issues](https://github.com/your-username/subzero-app/issues)
-- 💡 Suggest features via [GitHub Discussions](https://github.com/your-username/subzero-app/discussions)
+- 🐛 Report bugs via [GitHub Issues](https://github.com/your-username/quiteinbox-app/issues)
+- 💡 Suggest features via [GitHub Discussions](https://github.com/your-username/quiteinbox-app/discussions)
 
 ---
 
-**SubZero** • Privacy-first subscription management • Built with ❤️ for your inbox
+**QuiteInbox** • Privacy-first subscription management • Built with ❤️ for your inbox
 # quite-inbox
