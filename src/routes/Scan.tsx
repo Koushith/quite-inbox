@@ -87,8 +87,8 @@ export default function ScanPage() {
     : 0
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
-      <div className="flex-1 flex items-center justify-center p-4">
+    <div className="h-screen flex flex-col bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
+      <div className="flex-1 overflow-auto flex items-center justify-center p-4">
         <Card className="max-w-3xl w-full shadow-lg border border-gray-200">
         <CardHeader className="text-center pb-6 border-b">
           <CardTitle className="text-3xl font-bold text-gray-900 mb-2">
