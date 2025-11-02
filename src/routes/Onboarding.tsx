@@ -330,7 +330,7 @@ export default function OnboardingPage() {
                   Cancel
                 </Button>
                 <Button onClick={handleSignIn} className="flex-1 bg-black text-white hover:bg-gray-800 rounded-md h-11">
-                  Continue with Google
+                  Connect Gmail
                 </Button>
               </div>
             </div>
