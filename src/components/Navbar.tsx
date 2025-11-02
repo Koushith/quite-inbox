@@ -26,7 +26,7 @@ export default function Navbar() {
             className="text-lg sm:text-xl font-bold text-gray-900 hover:text-gray-700 transition-colors flex items-center gap-2"
           >
             <span className="text-2xl">📭</span>
-            <span className="hidden sm:inline">QuitInbox</span>
+            <span>QuitInbox</span>
           </button>
 
           {/* Nav Links */}
@@ -96,7 +96,7 @@ export default function Navbar() {
             className="flex items-center gap-2 font-semibold text-gray-600 hover:text-red-600 hover:bg-red-50 transition-colors"
           >
             <LogOut className="w-4 h-4" />
-            <span className="hidden sm:inline">Logout</span>
+            <span>Logout</span>
           </Button>
         </div>
       </div>
