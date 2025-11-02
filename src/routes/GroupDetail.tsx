@@ -9,6 +9,7 @@ import type { SenderGroup, CleanupPolicy, GmailMessageMetadata } from '@/types'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import Footer from '@/components/Footer'
 
 export default function GroupDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -136,16 +137,17 @@ export default function GroupDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-muted/30">
-      <header className="border-b bg-background">
-        <div className="container mx-auto px-4 py-4">
-          <Button variant="outline" onClick={() => navigate('/groups')}>
-            ← Back to Groups
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex flex-col">
+      <header className="border-b bg-white sticky top-0 z-10 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
+          <Button variant="outline" onClick={() => navigate('/subscriptions')}>
+            ← Back to Subscriptions
           </Button>
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8 max-w-7xl">
+      <main className="flex-1 overflow-auto">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Page Header */}
         <div className="mb-6">
           <h1 className="text-3xl font-bold mb-2">
@@ -462,7 +464,10 @@ export default function GroupDetailPage() {
             </Card>
           </div>
         </div>
+        </div>
       </main>
+
+      <Footer />
     </div>
   )
 }

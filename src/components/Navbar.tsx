@@ -20,7 +20,7 @@ export default function Navbar() {
     <header className="border-b bg-white sticky top-0 z-10 shadow-sm">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
         {/* Logo */}
-        <div className="flex items-center gap-3 sm:gap-6">
+        <div className="flex items-center gap-6">
           <button
             onClick={() => navigate('/subscriptions')}
             className="text-lg sm:text-xl font-bold text-gray-900 hover:text-gray-700 transition-colors flex items-center gap-2"
@@ -28,16 +28,6 @@ export default function Navbar() {
             <span className="text-2xl">📭</span>
             <span className="hidden sm:inline">QuitInbox</span>
           </button>
-
-          {/* Creator Credit */}
-          <a
-            href="https://koushith.in"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs text-gray-500 hover:text-blue-600 transition-colors hidden md:block"
-          >
-            by Koushith
-          </a>
 
           {/* Nav Links */}
           <nav className="hidden md:flex items-center gap-1">
