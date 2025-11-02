@@ -38,19 +38,34 @@ export default function ReportPage() {
   const fetchIssues = async () => {
     try {
       setLoading(true)
+      setError(null)
+
+      console.log('Fetching issues from:', `https://api.github.com/repos/${GITHUB_REPO}/issues`)
+
       const response = await fetch(
         `https://api.github.com/repos/${GITHUB_REPO}/issues?state=open&sort=created&direction=desc`
       )
 
+      console.log('GitHub API Response status:', response.status)
+
       if (!response.ok) {
-        throw new Error('Failed to fetch issues')
+        const errorText = await response.text()
+        console.error('GitHub API Error:', errorText)
+        throw new Error(`Failed to fetch issues: ${response.status} ${response.statusText}`)
       }
 
       const data = await response.json()
-      setIssues(data)
+      console.log('Fetched issues:', data.length, 'issues')
+      console.log('First issue:', data[0])
+
+      // Filter out pull requests (GitHub API returns both issues and PRs)
+      const issuesOnly = data.filter((item: any) => !item.pull_request)
+      console.log('Issues after filtering PRs:', issuesOnly.length)
+
+      setIssues(issuesOnly)
     } catch (err) {
       console.error('Error fetching issues:', err)
-      setError('Failed to load issues. Please try again later.')
+      setError(err instanceof Error ? err.message : 'Failed to load issues. Please try again later.')
     } finally {
       setLoading(false)
     }
@@ -73,21 +88,32 @@ export default function ReportPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Header */}
           <div className="mb-8">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between flex-wrap gap-4">
               <div>
                 <h1 className="text-3xl font-bold text-gray-900 mb-2">Report Bug</h1>
                 <p className="text-gray-600">
                   Found an issue? Let us know and track the progress here
                 </p>
               </div>
-              <Button
-                onClick={() => window.open(NEW_ISSUE_URL, '_blank')}
-                className="bg-gray-900 hover:bg-gray-800 font-semibold shadow-sm"
-                size="lg"
-              >
-                <Bug className="w-4 h-4 mr-2" />
-                Report New Bug
-              </Button>
+              <div className="flex items-center gap-3">
+                <Button
+                  onClick={fetchIssues}
+                  variant="outline"
+                  size="lg"
+                  disabled={loading}
+                  className="font-semibold"
+                >
+                  {loading ? 'Refreshing...' : 'Refresh Issues'}
+                </Button>
+                <Button
+                  onClick={() => window.open(NEW_ISSUE_URL, '_blank')}
+                  className="bg-gray-900 hover:bg-gray-800 font-semibold shadow-sm"
+                  size="lg"
+                >
+                  <Bug className="w-4 h-4 mr-2" />
+                  Report New Bug
+                </Button>
+              </div>
             </div>
           </div>
 
@@ -138,15 +164,27 @@ export default function ReportPage() {
                   <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <Bug className="w-8 h-8 text-red-600" />
                   </div>
-                  <p className="text-red-600 font-medium mb-2">{error}</p>
-                  <Button
-                    onClick={fetchIssues}
-                    variant="outline"
-                    size="sm"
-                    className="mt-2"
-                  >
-                    Try Again
-                  </Button>
+                  <h3 className="text-lg font-semibold text-red-600 mb-2">Failed to Load Issues</h3>
+                  <p className="text-sm text-gray-600 mb-2">{error}</p>
+                  <p className="text-xs text-gray-500 mb-4">
+                    Repository: {GITHUB_REPO}
+                  </p>
+                  <div className="flex items-center justify-center gap-3">
+                    <Button
+                      onClick={fetchIssues}
+                      variant="outline"
+                      size="sm"
+                    >
+                      Try Again
+                    </Button>
+                    <Button
+                      onClick={() => window.open(`https://github.com/${GITHUB_REPO}/issues`, '_blank')}
+                      variant="outline"
+                      size="sm"
+                    >
+                      View on GitHub
+                    </Button>
+                  </div>
                 </div>
               ) : issues.length === 0 ? (
                 <div className="px-6 py-16 text-center">
