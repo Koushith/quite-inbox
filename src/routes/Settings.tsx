@@ -6,7 +6,7 @@ import { Switch } from '@/components/ui/switch'
 import { Toaster, toast } from 'sonner'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
-import { Plus, X, Shield, Mail } from 'lucide-react'
+import { Plus, X, Shield, Mail, Lock, CheckCircle2 } from 'lucide-react'
 
 export default function SettingsPage() {
   const { settings, updateSettings } = useAppStore()
@@ -66,76 +66,128 @@ export default function SettingsPage() {
       <Navbar />
 
       <main className="flex-1 overflow-auto">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header with Stats */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Settings</h1>
-          <p className="text-gray-600">Manage your preferences and protected lists</p>
-        </div>
+          <p className="text-gray-600 mb-6">Manage your preferences and safety settings</p>
 
-        <div className="space-y-6">
-
-          <Card className="shadow-sm border border-gray-200 rounded-xl overflow-hidden">
-            <CardHeader className="pb-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-b">
+          {/* Quick Stats */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <Mail className="w-5 h-5 text-blue-600" />
+                  <CheckCircle2 className="w-5 h-5 text-blue-600" />
                 </div>
                 <div>
-                  <CardTitle className="text-lg font-bold text-gray-900">Gmail Permissions</CardTitle>
-                  <p className="text-sm text-gray-600 mt-1">
-                    Control what QuitInbox can do with your Gmail account
-                  </p>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4 p-6">
-              <div className="flex items-center justify-between p-5 bg-gray-50 rounded-xl border border-gray-100 hover:border-gray-200 transition-colors">
-                <div className="flex-1">
-                  <div className="font-semibold text-gray-900 text-base">Enable Modify Scope</div>
-                  <div className="text-sm text-gray-600 mt-1">
-                    Allow archiving and deleting messages
+                  <div className="text-xs font-medium text-gray-500 uppercase tracking-wider">Modify Scope</div>
+                  <div className="text-sm font-bold text-gray-900">
+                    {settings.enableModifyScope ? 'Enabled' : 'Disabled'}
                   </div>
                 </div>
-                <Switch
-                  checked={settings.enableModifyScope}
-                  onCheckedChange={(checked) =>
-                    updateSettings({ enableModifyScope: checked })
-                  }
-                />
               </div>
-
-              <div className="flex items-center justify-between p-5 bg-gray-50 rounded-xl border border-gray-100 hover:border-gray-200 transition-colors">
-                <div className="flex-1">
-                  <div className="font-semibold text-gray-900 text-base">Enable Send Scope</div>
-                  <div className="text-sm text-gray-600 mt-1">
-                    Send unsubscribe emails via Gmail API
-                  </div>
-                </div>
-                <Switch
-                  checked={settings.enableSendScope}
-                  onCheckedChange={(checked) =>
-                    updateSettings({ enableSendScope: checked })
-                  }
-                />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="shadow-sm border border-gray-200 rounded-xl overflow-hidden">
-            <CardHeader className="pb-4 bg-gradient-to-r from-yellow-50 to-orange-50 border-b">
+            </div>
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
                   <Shield className="w-5 h-5 text-yellow-600" />
                 </div>
                 <div>
-                  <CardTitle className="text-lg font-bold text-gray-900">Protected Keywords</CardTitle>
-                  <p className="text-sm text-gray-600 mt-1">
-                    Messages containing these keywords will be marked as important and protected from bulk actions
+                  <div className="text-xs font-medium text-gray-500 uppercase tracking-wider">Protected Keywords</div>
+                  <div className="text-sm font-bold text-gray-900">{settings.protectedKeywords.length}</div>
+                </div>
+              </div>
+            </div>
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                  <Lock className="w-5 h-5 text-green-600" />
+                </div>
+                <div>
+                  <div className="text-xs font-medium text-gray-500 uppercase tracking-wider">Protected Domains</div>
+                  <div className="text-sm font-bold text-gray-900">{settings.protectedDomains.length}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+          {/* Gmail Permissions - Full Width */}
+          <div className="lg:col-span-2">
+            <Card className="shadow-sm border-0 rounded-xl overflow-hidden bg-white">
+              <CardHeader className="pb-4 bg-white">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
+                    <Mail className="w-5 h-5 text-blue-600" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-lg font-bold text-gray-900">Gmail Permissions</CardTitle>
+                    <p className="text-sm text-gray-600 mt-1">
+                      Control what QuitInbox can do with your Gmail account
+                    </p>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="flex items-center justify-between p-4 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border border-gray-200 hover:border-blue-300 hover:shadow-sm transition-all">
+                    <div className="flex-1">
+                      <div className="font-semibold text-gray-900 text-base flex items-center gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-blue-600" />
+                        Modify Scope
+                      </div>
+                      <div className="text-xs text-gray-600 mt-1">
+                        Archive and delete emails
+                      </div>
+                    </div>
+                    <Switch
+                      checked={settings.enableModifyScope}
+                      onCheckedChange={(checked) =>
+                        updateSettings({ enableModifyScope: checked })
+                      }
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between p-4 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border border-gray-200 hover:border-blue-300 hover:shadow-sm transition-all">
+                    <div className="flex-1">
+                      <div className="font-semibold text-gray-900 text-base flex items-center gap-2">
+                        <Mail className="w-4 h-4 text-blue-600" />
+                        Send Scope
+                      </div>
+                      <div className="text-xs text-gray-600 mt-1">
+                        Send unsubscribe emails
+                      </div>
+                    </div>
+                    <Switch
+                      checked={settings.enableSendScope}
+                      onCheckedChange={(checked) =>
+                        updateSettings({ enableSendScope: checked })
+                      }
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Protected Keywords */}
+          <Card className="shadow-sm border-0 rounded-xl overflow-hidden h-fit bg-white">
+            <CardHeader className="pb-3 bg-white">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-yellow-50 rounded-lg flex items-center justify-center">
+                  <Shield className="w-5 h-5 text-yellow-600" />
+                </div>
+                <div className="flex-1">
+                  <CardTitle className="text-base font-bold text-gray-900">Protected Keywords</CardTitle>
+                  <p className="text-xs text-gray-600 mt-0.5">
+                    Protect important emails from bulk actions
                   </p>
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="space-y-5 p-6">
+            <CardContent className="space-y-4 p-5">
               {/* Add new keyword */}
               <div className="flex gap-2">
                 <input
@@ -143,58 +195,60 @@ export default function SettingsPage() {
                   value={newKeyword}
                   onChange={(e) => setNewKeyword(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && addKeyword()}
-                  placeholder="e.g., invoice, statement, receipt"
-                  className="flex-1 px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent bg-white hover:border-gray-300 transition-colors"
+                  placeholder="e.g., invoice, receipt"
+                  className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent bg-white"
                 />
-                <Button onClick={addKeyword} size="sm" className="bg-gray-900 hover:bg-gray-800 shadow-sm px-6">
-                  <Plus className="w-4 h-4 mr-1" />
-                  Add
+                <Button onClick={addKeyword} size="sm" className="bg-gray-900 hover:bg-gray-800 shadow-sm">
+                  <Plus className="w-4 h-4" />
                 </Button>
               </div>
 
               {/* Existing keywords */}
-              <div className="flex flex-wrap gap-2">
-                {settings.protectedKeywords.map((keyword, i) => (
-                  <div
-                    key={i}
-                    className="px-4 py-2 bg-red-50 text-red-700 border border-red-200 rounded-lg text-sm font-semibold flex items-center gap-2 hover:bg-red-100 transition-colors"
-                  >
-                    <span>{keyword}</span>
-                    <button
-                      onClick={() => removeKeyword(keyword)}
-                      className="text-red-600 hover:text-red-800 transition-colors"
-                      aria-label="Remove keyword"
-                    >
-                      <X className="w-3.5 h-3.5" />
-                    </button>
+              <div className="max-h-64 overflow-y-auto">
+                {settings.protectedKeywords.length === 0 ? (
+                  <div className="text-center py-6">
+                    <Shield className="w-6 h-6 text-gray-300 mx-auto mb-2" />
+                    <p className="text-xs text-gray-500">No keywords yet</p>
                   </div>
-                ))}
-                {settings.protectedKeywords.length === 0 && (
-                  <div className="text-center py-8 w-full">
-                    <Shield className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-                    <p className="text-sm text-gray-500 font-medium">No protected keywords yet</p>
-                    <p className="text-xs text-gray-400 mt-1">Add keywords to protect important emails</p>
+                ) : (
+                  <div className="flex flex-wrap gap-2">
+                    {settings.protectedKeywords.map((keyword, i) => (
+                      <div
+                        key={i}
+                        className="px-3 py-1.5 bg-yellow-50 text-yellow-800 border border-yellow-200 rounded-lg text-xs font-semibold flex items-center gap-1.5 hover:bg-yellow-100 transition-colors"
+                      >
+                        <span>{keyword}</span>
+                        <button
+                          onClick={() => removeKeyword(keyword)}
+                          className="text-yellow-700 hover:text-yellow-900 transition-colors"
+                          aria-label="Remove keyword"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>
             </CardContent>
           </Card>
 
-          <Card className="shadow-sm border border-gray-200 rounded-xl overflow-hidden">
-            <CardHeader className="pb-4 bg-gradient-to-r from-green-50 to-emerald-50 border-b">
+          {/* Protected Domains */}
+          <Card className="shadow-sm border-0 rounded-xl overflow-hidden h-fit bg-white">
+            <CardHeader className="pb-3 bg-white">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                  <Shield className="w-5 h-5 text-green-600" />
+                <div className="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center">
+                  <Lock className="w-5 h-5 text-green-600" />
                 </div>
-                <div>
-                  <CardTitle className="text-lg font-bold text-gray-900">Protected Domains</CardTitle>
-                  <p className="text-sm text-gray-600 mt-1">
-                    Senders from these domains will be marked as important (banks, government, etc.)
+                <div className="flex-1">
+                  <CardTitle className="text-base font-bold text-gray-900">Protected Domains</CardTitle>
+                  <p className="text-xs text-gray-600 mt-0.5">
+                    Mark important senders (banks, gov, etc.)
                   </p>
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="space-y-5 p-6">
+            <CardContent className="space-y-4 p-5">
               {/* Add new domain */}
               <div className="flex gap-2">
                 <input
@@ -202,37 +256,38 @@ export default function SettingsPage() {
                   value={newDomain}
                   onChange={(e) => setNewDomain(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && addDomain()}
-                  placeholder="e.g., bank.com, irs.gov, paypal.com"
-                  className="flex-1 px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent bg-white hover:border-gray-300 transition-colors"
+                  placeholder="e.g., bank.com, irs.gov"
+                  className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white"
                 />
-                <Button onClick={addDomain} size="sm" className="bg-gray-900 hover:bg-gray-800 shadow-sm px-6">
-                  <Plus className="w-4 h-4 mr-1" />
-                  Add
+                <Button onClick={addDomain} size="sm" className="bg-gray-900 hover:bg-gray-800 shadow-sm">
+                  <Plus className="w-4 h-4" />
                 </Button>
               </div>
 
               {/* Existing domains */}
-              <div className="flex flex-wrap gap-2">
-                {settings.protectedDomains.map((domain, i) => (
-                  <div
-                    key={i}
-                    className="px-4 py-2 bg-red-50 text-red-700 border border-red-200 rounded-lg text-sm font-semibold flex items-center gap-2 hover:bg-red-100 transition-colors"
-                  >
-                    <span>{domain}</span>
-                    <button
-                      onClick={() => removeDomain(domain)}
-                      className="text-red-600 hover:text-red-800 transition-colors"
-                      aria-label="Remove domain"
-                    >
-                      <X className="w-3.5 h-3.5" />
-                    </button>
+              <div className="max-h-64 overflow-y-auto">
+                {settings.protectedDomains.length === 0 ? (
+                  <div className="text-center py-6">
+                    <Lock className="w-6 h-6 text-gray-300 mx-auto mb-2" />
+                    <p className="text-xs text-gray-500">No domains yet</p>
                   </div>
-                ))}
-                {settings.protectedDomains.length === 0 && (
-                  <div className="text-center py-8 w-full">
-                    <Shield className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-                    <p className="text-sm text-gray-500 font-medium">No protected domains yet</p>
-                    <p className="text-xs text-gray-400 mt-1">Add domains to protect important senders</p>
+                ) : (
+                  <div className="flex flex-wrap gap-2">
+                    {settings.protectedDomains.map((domain, i) => (
+                      <div
+                        key={i}
+                        className="px-3 py-1.5 bg-green-50 text-green-800 border border-green-200 rounded-lg text-xs font-semibold flex items-center gap-1.5 hover:bg-green-100 transition-colors"
+                      >
+                        <span>{domain}</span>
+                        <button
+                          onClick={() => removeDomain(domain)}
+                          className="text-green-700 hover:text-green-900 transition-colors"
+                          aria-label="Remove domain"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>

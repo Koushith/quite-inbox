@@ -33,10 +33,10 @@ export default function Navbar() {
           <nav className="hidden md:flex items-center gap-1">
             <button
               onClick={() => navigate('/subscriptions')}
-              className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all flex items-center gap-2 ${
+              className={`px-3 py-2 text-sm font-semibold transition-all flex items-center gap-2 ${
                 isActive('/subscriptions')
-                  ? 'bg-blue-600 text-white shadow-md'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  ? 'text-blue-600 border-b-2 border-blue-600'
+                  : 'text-gray-600 hover:text-gray-900'
               }`}
             >
               <Mail className="w-4 h-4" />
@@ -44,10 +44,10 @@ export default function Navbar() {
             </button>
             <button
               onClick={() => navigate('/activity')}
-              className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all flex items-center gap-2 ${
+              className={`px-3 py-2 text-sm font-semibold transition-all flex items-center gap-2 ${
                 isActive('/activity')
-                  ? 'bg-blue-600 text-white shadow-md'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  ? 'text-blue-600 border-b-2 border-blue-600'
+                  : 'text-gray-600 hover:text-gray-900'
               }`}
             >
               <Activity className="w-4 h-4" />
@@ -55,10 +55,10 @@ export default function Navbar() {
             </button>
             <button
               onClick={() => navigate('/settings')}
-              className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all flex items-center gap-2 ${
+              className={`px-3 py-2 text-sm font-semibold transition-all flex items-center gap-2 ${
                 isActive('/settings')
-                  ? 'bg-blue-600 text-white shadow-md'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  ? 'text-blue-600 border-b-2 border-blue-600'
+                  : 'text-gray-600 hover:text-gray-900'
               }`}
             >
               <Settings className="w-4 h-4" />
@@ -66,10 +66,10 @@ export default function Navbar() {
             </button>
             <button
               onClick={() => navigate('/report')}
-              className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all flex items-center gap-2 ${
+              className={`px-3 py-2 text-sm font-semibold transition-all flex items-center gap-2 ${
                 isActive('/report')
-                  ? 'bg-blue-600 text-white shadow-md'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  ? 'text-blue-600 border-b-2 border-blue-600'
+                  : 'text-gray-600 hover:text-gray-900'
               }`}
             >
               <Bug className="w-4 h-4" />
