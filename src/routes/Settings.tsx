@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import { Toaster, toast } from 'sonner'
 import Navbar from '@/components/Navbar'
+import Footer from '@/components/Footer'
 import { Plus, X, Shield, Mail } from 'lucide-react'
 
 export default function SettingsPage() {
@@ -239,6 +240,7 @@ export default function SettingsPage() {
         </div>
       </main>
 
+      <Footer />
       <Toaster position="top-right" richColors />
     </div>
   )

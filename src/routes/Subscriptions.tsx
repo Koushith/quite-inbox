@@ -15,6 +15,7 @@ import type { SenderGroup } from '@/types'
 import { Toaster, toast } from 'sonner'
 import { storage } from '@/lib/storage/db'
 import Navbar from '@/components/Navbar'
+import Footer from '@/components/Footer'
 
 export default function SubscriptionsPage() {
   const navigate = useNavigate()
@@ -698,6 +699,7 @@ export default function SubscriptionsPage() {
         </DialogContent>
       </Dialog>
 
+      <Footer />
       <Toaster position="top-right" richColors />
     </div>
   )
