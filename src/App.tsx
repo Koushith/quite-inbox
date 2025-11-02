@@ -9,6 +9,7 @@ import SubscriptionsPage from './routes/Subscriptions'
 import GroupDetailPage from './routes/GroupDetail'
 import ActivityPage from './routes/Activity'
 import SettingsPage from './routes/Settings'
+import ReportPage from './routes/Report'
 import OAuthCallback from './routes/OAuthCallback'
 
 function App() {
@@ -40,6 +41,7 @@ function App() {
               <Route path="/group/:id" element={<GroupDetailPage />} />
               <Route path="/activity" element={<ActivityPage />} />
               <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/report" element={<ReportPage />} />
             </>
           ) : (
             <>
