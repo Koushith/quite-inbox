@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { startOAuthFlow, GMAIL_SCOPES } from '@/lib/auth/oauth';
 import { Button } from '@/components/ui/button';
 import { Mail, Shield, Zap, Trash2, Lock, Code } from 'lucide-react';
+import { GitHubStars } from '@/components/GitHubStars';
 
 export default function OnboardingPage() {
   const [showPermissions, setShowPermissions] = useState(false);
@@ -34,14 +35,7 @@ export default function OnboardingPage() {
               <a href="#features" className="text-sm text-gray-600 hover:text-black">
                 Features
               </a>
-              <a
-                href="https://github.com/Koushith/quite-inbox"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm text-gray-600 hover:text-black"
-              >
-                GitHub
-              </a>
+              <GitHubStars />
             </div>
           </div>
         </div>
@@ -106,7 +100,7 @@ export default function OnboardingPage() {
             </div>
 
             {/* Hero Image */}
-            <div className="pt-12 pb-8">
+            <div className="pt-16 pb-8">
               <div className="relative max-w-2xl mx-auto">
                 <img
                   src="https://notioly.com/wp-content/uploads/2025/03/516.Inbox-Overflowing.png"
