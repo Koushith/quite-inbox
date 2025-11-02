@@ -81,7 +81,7 @@ export default function SettingsPage() {
                 <div>
                   <CardTitle className="text-lg font-bold text-gray-900">Gmail Permissions</CardTitle>
                   <p className="text-sm text-gray-600 mt-1">
-                    Control what SubZero can do with your Gmail account
+                    Control what QuitInbox can do with your Gmail account
                   </p>
                 </div>
               </div>

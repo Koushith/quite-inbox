@@ -1,6 +1,7 @@
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAppStore } from '@/stores/appStore'
 import { Button } from '@/components/ui/button'
+import { Mail, Activity, Settings, Scan, LogOut } from 'lucide-react'
 
 export default function Navbar() {
   const navigate = useNavigate()
@@ -8,52 +9,56 @@ export default function Navbar() {
   const { logout } = useAppStore()
 
   const isActive = (path: string) => {
-    return location.pathname === path
+    return location.pathname === path || location.pathname.startsWith(path)
   }
 
   return (
     <header className="border-b bg-white sticky top-0 z-10 shadow-sm">
-      <div className="max-w-[1400px] mx-auto px-6 py-4 flex items-center justify-between">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
         {/* Logo */}
-        <div className="flex items-center gap-8">
+        <div className="flex items-center gap-6">
           <button
             onClick={() => navigate('/subscriptions')}
-            className="text-xl font-bold text-gray-900 hover:text-gray-700 transition-colors"
+            className="text-lg sm:text-xl font-bold text-gray-900 hover:text-gray-700 transition-colors flex items-center gap-2"
           >
-            SubZero
+            <span className="text-2xl">📭</span>
+            <span className="hidden sm:inline">QuitInbox</span>
           </button>
 
           {/* Nav Links */}
           <nav className="hidden md:flex items-center gap-1">
             <button
               onClick={() => navigate('/subscriptions')}
-              className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+              className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all flex items-center gap-2 ${
                 isActive('/subscriptions')
-                  ? 'bg-gray-900 text-white'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                  ? 'bg-gray-900 text-white shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
               }`}
             >
-              Subscriptions
+              <Mail className="w-4 h-4" />
+              <span>Subscriptions</span>
             </button>
             <button
               onClick={() => navigate('/activity')}
-              className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+              className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all flex items-center gap-2 ${
                 isActive('/activity')
-                  ? 'bg-gray-900 text-white'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                  ? 'bg-gray-900 text-white shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
               }`}
             >
-              Activity
+              <Activity className="w-4 h-4" />
+              <span>Activity</span>
             </button>
             <button
               onClick={() => navigate('/settings')}
-              className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+              className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all flex items-center gap-2 ${
                 isActive('/settings')
-                  ? 'bg-gray-900 text-white'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                  ? 'bg-gray-900 text-white shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
               }`}
             >
-              Settings
+              <Settings className="w-4 h-4" />
+              <span>Settings</span>
             </button>
           </nav>
         </div>
@@ -64,12 +69,19 @@ export default function Navbar() {
             variant="outline"
             size="sm"
             onClick={() => navigate('/scan')}
-            className="hidden sm:flex"
+            className="hidden sm:flex items-center gap-2 font-semibold"
           >
-            Scan Inbox
+            <Scan className="w-4 h-4" />
+            <span>Scan Inbox</span>
           </Button>
-          <Button variant="ghost" size="sm" onClick={logout}>
-            Logout
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={logout}
+            className="flex items-center gap-2 font-semibold"
+          >
+            <LogOut className="w-4 h-4" />
+            <span className="hidden sm:inline">Logout</span>
           </Button>
         </div>
       </div>

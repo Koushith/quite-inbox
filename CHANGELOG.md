@@ -1,6 +1,39 @@
-# SubZero - Change Log
+# QuitInbox - Change Log
 
 ## Latest Updates (Current Session)
+
+### 🎯 Rebranding + Enhanced Navigation ✅
+
+#### **App Rebranding** ✅
+- **Name Change**: SubZero → **QuitInbox**
+- **Brand Identity**:
+  - Logo: 📭 mailbox emoji
+  - Color theme: Professional gray with pops of color
+  - Tagline: "Clean Your Email Subscriptions"
+- **Updated Everywhere**:
+  - package.json
+  - index.html (title, meta tags, OG tags)
+  - Navbar component
+  - Settings page
+  - All documentation
+
+#### **Enhanced Navigation Bar** ✅
+- **Icons Added**: All nav items now have lucide-react icons
+  - 📧 Mail icon for Subscriptions
+  - 📊 Activity icon for Activity
+  - ⚙️ Settings icon for Settings
+  - 🔍 Scan icon for Scan button
+  - 🚪 LogOut icon for Logout
+- **Improved Highlighting**:
+  - Fixed active state detection (now checks startsWith for sub-routes)
+  - Better visual feedback with shadows
+  - Consistent rounded-lg styling
+  - Font-semibold for better readability
+- **Responsive Design**:
+  - Logo text hidden on mobile
+  - Button text shown/hidden based on screen size
+  - Better spacing and padding
+- **Location**: `src/components/Navbar.tsx`
 
 ### 🎨 Professional UI Redesign + Security Review ✅
 
