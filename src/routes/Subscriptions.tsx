@@ -228,11 +228,35 @@ export default function SubscriptionsPage() {
     }
   })
 
+  // Calculate insightful stats
+  const activeGroups = groups.filter(g => !unsubscribedIds.has(g.id))
+  const totalEmails = groups.reduce((sum, g) => sum + g.messageCount, 0)
+
+  // Calculate date range from emails
+  const dates = groups.flatMap(g => [new Date(g.firstSeen), new Date(g.lastSeen)])
+  const oldestDate = dates.length > 0 ? new Date(Math.min(...dates.map(d => d.getTime()))) : null
+  const newestDate = dates.length > 0 ? new Date(Math.max(...dates.map(d => d.getTime()))) : null
+
+  // Calculate time span in days
+  const timeSpanDays = oldestDate && newestDate
+    ? Math.ceil((newestDate.getTime() - oldestDate.getTime()) / (1000 * 60 * 60 * 24))
+    : 0
+
+  // Calculate weekly average
+  const weeksSpanned = timeSpanDays > 0 ? timeSpanDays / 7 : 1
+  const emailsPerWeek = Math.round(totalEmails / weeksSpanned)
+
   const stats = {
     total: groups.length,
-    active: groups.filter(g => !unsubscribedIds.has(g.id)).length,
+    active: activeGroups.length,
     unsubscribed: unsubscribedIds.size,
-    totalEmails: groups.reduce((sum, g) => sum + g.messageCount, 0)
+    totalEmails,
+    emailsPerWeek,
+    dateRange: oldestDate && newestDate ? {
+      oldest: oldestDate,
+      newest: newestDate,
+      span: timeSpanDays
+    } : null
   }
 
   const getStatusInfo = (group: SenderGroup, isUnsubscribed: boolean) => {
@@ -320,23 +344,44 @@ export default function SubscriptionsPage() {
           </div>
         ) : (
           <>
+            {/* Date Range Context */}
+            {stats.dateRange && (
+              <div className="mb-6 text-center">
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg text-sm">
+                  <svg className="w-4 h-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <span className="font-semibold text-blue-900">
+                    Showing emails from {stats.dateRange.oldest.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} to {stats.dateRange.newest.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                  </span>
+                  <span className="text-blue-600">
+                    ({stats.dateRange.span} days)
+                  </span>
+                </div>
+              </div>
+            )}
+
             {/* Stats Bar */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
-                <div className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Total Subscriptions</div>
-                <div className="text-3xl font-bold text-gray-900">{stats.total}</div>
+                <div className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Subscriptions Found</div>
+                <div className="text-3xl font-bold text-gray-900 mb-1">{stats.total}</div>
+                <div className="text-xs text-gray-500">Total senders detected</div>
               </div>
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
-                <div className="text-xs font-medium text-blue-600 uppercase tracking-wider mb-2">Active</div>
-                <div className="text-3xl font-bold text-blue-600">{stats.active}</div>
+                <div className="text-xs font-medium text-blue-600 uppercase tracking-wider mb-1">Still Active</div>
+                <div className="text-3xl font-bold text-blue-600 mb-1">{stats.active}</div>
+                <div className="text-xs text-blue-600">Not yet unsubscribed</div>
               </div>
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
-                <div className="text-xs font-medium text-green-600 uppercase tracking-wider mb-2">Unsubscribed</div>
-                <div className="text-3xl font-bold text-green-600">{stats.unsubscribed}</div>
+                <div className="text-xs font-medium text-green-600 uppercase tracking-wider mb-1">Cleaned Up</div>
+                <div className="text-3xl font-bold text-green-600 mb-1">{stats.unsubscribed}</div>
+                <div className="text-xs text-green-600">Successfully unsubscribed</div>
               </div>
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
-                <div className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Total Emails</div>
-                <div className="text-3xl font-bold text-gray-900">{stats.totalEmails.toLocaleString()}</div>
+                <div className="text-xs font-medium text-orange-600 uppercase tracking-wider mb-1">Weekly Volume</div>
+                <div className="text-3xl font-bold text-orange-600 mb-1">{stats.emailsPerWeek.toLocaleString()}</div>
+                <div className="text-xs text-orange-600">Emails per week average</div>
               </div>
             </div>
 

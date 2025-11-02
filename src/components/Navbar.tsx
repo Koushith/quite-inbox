@@ -9,7 +9,11 @@ export default function Navbar() {
   const { logout } = useAppStore()
 
   const isActive = (path: string) => {
-    return location.pathname === path || location.pathname.startsWith(path)
+    // Exact match for the main path
+    if (location.pathname === path) return true
+    // Check if it's a sub-route (e.g., /subscriptions/detail)
+    if (location.pathname.startsWith(path + '/')) return true
+    return false
   }
 
   return (
@@ -31,7 +35,7 @@ export default function Navbar() {
               onClick={() => navigate('/subscriptions')}
               className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all flex items-center gap-2 ${
                 isActive('/subscriptions')
-                  ? 'bg-gray-900 text-white shadow-sm'
+                  ? 'bg-blue-600 text-white shadow-md'
                   : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
               }`}
             >
@@ -42,7 +46,7 @@ export default function Navbar() {
               onClick={() => navigate('/activity')}
               className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all flex items-center gap-2 ${
                 isActive('/activity')
-                  ? 'bg-gray-900 text-white shadow-sm'
+                  ? 'bg-blue-600 text-white shadow-md'
                   : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
               }`}
             >
@@ -53,7 +57,7 @@ export default function Navbar() {
               onClick={() => navigate('/settings')}
               className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all flex items-center gap-2 ${
                 isActive('/settings')
-                  ? 'bg-gray-900 text-white shadow-sm'
+                  ? 'bg-blue-600 text-white shadow-md'
                   : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
               }`}
             >
