@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import { Toaster, toast } from 'sonner'
 import Navbar from '@/components/Navbar'
+import Footer from '@/components/Footer'
 import { Plus, X, Shield, Mail } from 'lucide-react'
 
 export default function SettingsPage() {
@@ -61,7 +62,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex flex-col">
       <Navbar />
 
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -239,6 +240,7 @@ export default function SettingsPage() {
         </div>
       </main>
 
+      <Footer />
       <Toaster position="top-right" richColors />
     </div>
   )

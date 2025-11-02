@@ -15,6 +15,7 @@ import type { SenderGroup } from '@/types'
 import { Toaster, toast } from 'sonner'
 import { storage } from '@/lib/storage/db'
 import Navbar from '@/components/Navbar'
+import Footer from '@/components/Footer'
 
 export default function SubscriptionsPage() {
   const navigate = useNavigate()
@@ -296,7 +297,7 @@ export default function SubscriptionsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex flex-col">
       <Navbar />
 
       {/* Scanning Progress Banner */}
@@ -698,6 +699,7 @@ export default function SubscriptionsPage() {
         </DialogContent>
       </Dialog>
 
+      <Footer />
       <Toaster position="top-right" richColors />
     </div>
   )

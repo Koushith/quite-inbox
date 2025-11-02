@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import Navbar from '@/components/Navbar'
+import Footer from '@/components/Footer'
 
 export default function ActivityPage() {
   const { actionLog, loadActionLog } = useAppStore()
@@ -25,7 +26,7 @@ export default function ActivityPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       <Navbar />
 
       <main className="max-w-[1400px] mx-auto px-6 py-8">
@@ -79,6 +80,8 @@ export default function ActivityPage() {
           </div>
         )}
       </main>
+
+      <Footer />
     </div>
   )
 }
