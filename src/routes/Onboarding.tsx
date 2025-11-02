@@ -46,6 +46,10 @@ export default function OnboardingPage() {
         <div className="max-w-7xl mx-auto w-full px-6 lg:px-8 py-20 lg:py-24">
           <div className="max-w-4xl mx-auto text-center space-y-8">
             {/* Badge */}
+            <div className="inline-flex items-center space-x-2 bg-gray-100 rounded-full px-4 py-2 text-sm">
+              <Shield className="h-4 w-4 text-black" />
+              <span className="text-black font-medium">100% Free • Open Source • Privacy First</span>
+            </div>
 
             {/* Main Headline */}
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-black leading-[1.05] tracking-tight">
