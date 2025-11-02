@@ -233,6 +233,74 @@ export default function OnboardingPage() {
         </div>
       </section>
 
+      {/* FAQ Section */}
+      <section className="bg-gray-50 py-20 lg:py-28 border-t border-gray-200">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="max-w-3xl mx-auto">
+            {/* Section Header */}
+            <div className="text-center mb-12 lg:mb-16">
+              <h2 className="text-4xl lg:text-5xl font-bold text-black mb-4">Frequently Asked Questions</h2>
+              <p className="text-lg text-gray-600">
+                Everything you need to know about QuiteInbox
+              </p>
+            </div>
+
+            {/* FAQ Items */}
+            <div className="space-y-8">
+              {/* FAQ 1 */}
+              <div className="bg-white rounded-lg border border-gray-200 p-6 lg:p-8">
+                <h3 className="text-lg lg:text-xl font-semibold text-black mb-3">
+                  Is QuiteInbox really free?
+                </h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Yes, QuiteInbox is 100% free and open-source. No paid plans, no upsells.
+                </p>
+              </div>
+
+              {/* FAQ 2 */}
+              <div className="bg-white rounded-lg border border-gray-200 p-6 lg:p-8">
+                <h3 className="text-lg lg:text-xl font-semibold text-black mb-3">
+                  Does QuiteInbox work with non-Gmail accounts?
+                </h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Not currently. QuiteInbox uses the Gmail API and is designed specifically for Gmail accounts. IMAP support may be added in the future.
+                </p>
+              </div>
+
+              {/* FAQ 3 */}
+              <div className="bg-white rounded-lg border border-gray-200 p-6 lg:p-8">
+                <h3 className="text-lg lg:text-xl font-semibold text-black mb-3">
+                  What happens if I delete QuiteInbox?
+                </h3>
+                <p className="text-gray-600 leading-relaxed">
+                  All data is stored locally in your browser's IndexedDB. If you clear your browser data or uninstall QuiteInbox, the data is permanently deleted. You can export your data before doing so.
+                </p>
+              </div>
+
+              {/* FAQ 4 */}
+              <div className="bg-white rounded-lg border border-gray-200 p-6 lg:p-8">
+                <h3 className="text-lg lg:text-xl font-semibold text-black mb-3">
+                  Can I use QuiteInbox on multiple devices?
+                </h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Each device stores its own local data. There's no sync between devices. You can export/import settings and action logs manually.
+                </p>
+              </div>
+
+              {/* FAQ 5 */}
+              <div className="bg-white rounded-lg border border-gray-200 p-6 lg:p-8">
+                <h3 className="text-lg lg:text-xl font-semibold text-black mb-3">
+                  Does QuiteInbox support Google Workspace accounts?
+                </h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Yes, as long as your Workspace admin allows third-party OAuth apps and the Gmail API.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Permissions Modal */}
       {showPermissions && (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
