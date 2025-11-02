@@ -8,12 +8,13 @@ This error usually occurs during the OAuth callback. Here's how to diagnose and 
 
 #### Step 1: Check Your .env File
 
-Make sure both variables are set correctly:
+Make sure your client ID is set correctly:
 
 ```bash
 VITE_GOOGLE_CLIENT_ID=your_client_id.apps.googleusercontent.com
-VITE_GOOGLE_CLIENT_SECRET=GOCSPX-your_secret_here
 ```
+
+**Note**: We use PKCE (no client secret needed!). Only the client_id is required.
 
 **Important**: After changing `.env`, you MUST restart the dev server:
 
@@ -36,8 +37,9 @@ Common OAuth errors:
 - **`redirect_uri_mismatch`**: Your redirect URI doesn't match what's in Google Cloud Console
   - Fix: Make sure `http://localhost:5173/oauth/callback` is EXACTLY in your OAuth credentials
 
-- **`invalid_client`**: Client ID or Secret is wrong
-  - Fix: Double-check you copied both correctly from Google Cloud Console
+- **`invalid_client`**: Client ID is wrong or malformed
+  - Fix: Double-check you copied the client ID correctly from Google Cloud Console
+  - Make sure it ends with `.apps.googleusercontent.com`
 
 - **`invalid_grant`**: Authorization code expired or already used
   - Fix: Try the OAuth flow again from the beginning
@@ -57,7 +59,8 @@ Common OAuth errors:
 2. **Trailing slash** in redirect URI (`/oauth/callback/` ❌ vs `/oauth/callback` ✅)
 3. **Wrong port number** (5173 vs 5174)
 4. **Using http instead of https** (for localhost, http is correct)
-5. **Client Secret has spaces** (copy-paste issue - remove any spaces)
+5. **Client ID has spaces** (copy-paste issue - remove any spaces)
+6. **Missing `.apps.googleusercontent.com`** at the end of client ID
 
 #### Step 5: Test OAuth Configuration
 

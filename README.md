@@ -93,18 +93,32 @@ npm install
 
 ### 3. Set Up Google OAuth
 
-**⚠️ IMPORTANT**: You'll need both a **Client ID** and **Client Secret** from Google.
+**✅ IMPORTANT**: Create a **"Desktop app"** OAuth client (NOT "Web application")
 
 **Quick Setup**:
 1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-2. Create a new project and enable the Gmail API
-3. Create OAuth 2.0 credentials (Web application type)
-4. Add authorized redirect URI: `http://localhost:5173/oauth/callback`
-5. Copy both the **Client ID** and **Client Secret**
+2. Create a new project (or use existing) and enable the Gmail API
+3. Navigate to **APIs & Services** > **Credentials**
+4. Click **"Create Credentials"** > **"OAuth client ID"**
+5. **Select "Desktop app"** from the Application type dropdown
+6. Name it: "SubZero Desktop Client"
+7. Click **"Create"**
+8. Copy the **Client ID** (Client Secret is optional but can be included if shown)
+
+**Why "Desktop app" and not "Web application"?**
+- Desktop app clients work seamlessly with PKCE and localhost redirects
+- No need to configure authorized redirect URIs or JavaScript origins
+- Simpler setup, fewer configuration errors
+- Equally secure (PKCE provides the cryptographic protection)
+
+**Alternative: Using "Web application" type**
+If you prefer or already have a "Web application" OAuth client:
+- You MUST add to **"Authorized redirect URIs"**: `http://localhost:5173/oauth/callback`
+- You MUST add to **"Authorized JavaScript origins"**: `http://localhost:5173`
 
 **📖 Detailed Instructions**: See [docs/OAUTH_SETUP.md](docs/OAUTH_SETUP.md) for step-by-step guide with screenshots and troubleshooting.
 
-**Security Note**: For client-side apps, the OAuth client secret cannot be kept truly secret (it will be visible in the JavaScript bundle). This is a standard limitation of browser-based OAuth and is considered acceptable when combined with PKCE and strict redirect URI validation.
+**Security Note**: We use PKCE (Proof Key for Code Exchange), which provides cryptographic protection without requiring client secrets. The code_verifier/code_challenge pair is what protects the OAuth flow.
 
 ### 4. Configure Environment Variables
 
@@ -114,12 +128,13 @@ Create a `.env` file in the project root:
 cp .env.example .env
 ```
 
-Edit `.env` and add your Google OAuth credentials:
+Edit `.env` and add your Google OAuth client ID:
 
 ```
 VITE_GOOGLE_CLIENT_ID=your_client_id_here.apps.googleusercontent.com
-VITE_GOOGLE_CLIENT_SECRET=your_client_secret_here
 ```
+
+That's all you need! No secret required.
 
 ### 5. Run the Development Server
 

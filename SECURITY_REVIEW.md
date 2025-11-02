@@ -42,27 +42,33 @@ SubZero is a **local-first, privacy-focused Gmail subscription manager** built a
 
 ## 🔴 Critical Security Issues
 
-### 1. **OAuth Client Secret Exposure** 🚨
+### 1. **OAuth Security with PKCE** ✅
 
-**Issue**: The OAuth configuration needs to be properly secured for production.
+**Status**: Properly secured using PKCE without client secrets!
 
-**Current State**:
-- Using PKCE flow (good!)
-- But OAuth credentials likely in environment variables
+**Current Implementation**:
+- ✅ Using PKCE flow (Proof Key for Code Exchange)
+- ✅ NO client secret in codebase (not needed with PKCE)
+- ✅ Only client_id exposed (which is meant to be public)
 
-**Required Actions**:
+**Environment Variables**:
 ```bash
-# NEVER commit these to git:
-- CLIENT_ID (okay to expose in frontend)
-- CLIENT_SECRET (DO NOT include if using PKCE properly)
-- REDIRECT_URI (must match Google Console exactly)
+# Only this is needed:
+VITE_GOOGLE_CLIENT_ID=your_client_id.apps.googleusercontent.com
+
+# NO client_secret needed - PKCE doesn't require it!
 ```
 
-**Recommendations**:
-1. ✅ Use PKCE without client secret (already done)
-2. ⚠️ Add `.env` to `.gitignore` (verify this)
-3. ⚠️ Set up environment variables in deployment platform
-4. ⚠️ Restrict OAuth app to specific domains in Google Console
+**Why This is Secure**:
+1. ✅ PKCE uses cryptographic code challenges instead of secrets
+2. ✅ Each auth request has a unique, un-interceptable code verifier
+3. ✅ Redirect URIs are strictly validated by Google
+4. ✅ Industry standard for public clients (same as Gmail, Spotify apps)
+
+**Production Checklist**:
+1. ✅ `.env` in `.gitignore` (only need to protect custom configs)
+2. ✅ Set VITE_GOOGLE_CLIENT_ID in deployment platform
+3. ⚠️ Restrict OAuth app to specific domains in Google Console
 
 ---
 

@@ -4,17 +4,31 @@ This guide will walk you through setting up Google OAuth for SubZero.
 
 ## Overview
 
-SubZero uses OAuth 2.0 with PKCE (Proof Key for Code Exchange) for authentication. While PKCE adds security for client-side apps, Google still requires a client secret for token exchange.
+QuitInbox uses OAuth 2.0 with **PKCE (Proof Key for Code Exchange)** and **"Desktop app" client type** for truly secret-less authentication. This is specifically designed for public clients like SPAs and PWAs.
 
-## Important Security Note
+## Important: Desktop App vs Web Application
 
-⚠️ **For browser-based applications, the OAuth client secret cannot be kept truly secret.** This is a known limitation of OAuth in Single Page Applications (SPAs). The secret will be visible in your JavaScript bundle.
+Google has two OAuth client types:
 
-This is acceptable because:
-1. PKCE provides additional security against authorization code interception
-2. The redirect URI is strictly validated by Google
-3. This is a standard practice for SPAs (used by many public applications)
-4. The secret alone cannot be used to access user data without the authorization code
+| Client Type | Requires Secret? | Use Case |
+|------------|------------------|----------|
+| **Desktop app** ✅ | **NO** | Perfect for open source, SPAs, mobile apps |
+| Web application ❌ | YES | Requires secret even with PKCE |
+
+**We use "Desktop app" type** - no secrets needed at all!
+
+## Security Features
+
+✅ **Truly secret-less OAuth** - Nothing sensitive in your JavaScript bundle!
+
+**Why this is secure:**
+1. **PKCE cryptographic protection** - Each auth request has a unique code challenge that cannot be intercepted
+2. **No secrets to steal** - Desktop app clients don't use secrets at all
+3. **Redirect URI validation** - Google strictly validates where tokens can be sent (see step 4 below)
+4. **Industry standard** - Same model as mobile apps and Electron apps
+5. **Perfect for open source** - Users can verify no secrets in code
+
+**The client_id is meant to be public** - it just identifies your app to Google.
 
 ## Step-by-Step Setup
 
@@ -51,20 +65,20 @@ This is acceptable because:
 9. Add test users (your email address)
 10. Click **Save and Continue** → **Back to Dashboard**
 
-### 4. Create OAuth 2.0 Credentials
+### 4. Create OAuth 2.0 Credentials (Desktop App)
 
 1. Go to **APIs & Services** > **Credentials**
 2. Click **Create Credentials** > **OAuth client ID**
-3. Select **Web application** as the application type
-4. Enter a name: "SubZero Web Client"
-5. Add **Authorized JavaScript origins**:
-   - For development: `http://localhost:5173`
-   - For production: `https://your-domain.com`
-6. Add **Authorized redirect URIs**:
-   - For development: `http://localhost:5173/oauth/callback`
-   - For production: `https://your-domain.com/oauth/callback`
-7. Click **Create**
-8. **IMPORTANT**: Copy both the **Client ID** and **Client Secret**
+3. **IMPORTANT: Select "Desktop app"** as the application type (NOT "Web application")
+4. Enter a name: "QuitInbox Desktop Client"
+5. Click **Create**
+6. **Copy the Client ID** (no secret needed!)
+
+**Important Notes:**
+- Desktop app clients don't have redirect URI restrictions in Google Console
+- The redirect URI is validated by the `redirect_uri` parameter in the OAuth request
+- You don't need to add `http://localhost:5173` anywhere - it will work automatically
+- For production, you can use the same client ID - just make sure your app's redirect_uri parameter matches your domain
 
 ### 5. Configure Environment Variables
 
@@ -74,12 +88,13 @@ Create a `.env` file in your project root:
 cp .env.example .env
 ```
 
-Edit `.env` and add your credentials:
+Edit `.env` and add your client ID:
 
 ```env
 VITE_GOOGLE_CLIENT_ID=123456789.apps.googleusercontent.com
-VITE_GOOGLE_CLIENT_SECRET=GOCSPX-abcdefghijklmnop
 ```
+
+**Note**: You only need the client_id. Do NOT add client_secret - PKCE doesn't use it!
 
 ### 6. Test the Setup
 
@@ -110,13 +125,13 @@ VITE_GOOGLE_CLIENT_SECRET=GOCSPX-abcdefghijklmnop
 - No trailing slashes
 - Port number must match
 
-### Error: "client_secret is missing"
+### Error: "client_id is missing"
 
-**Cause**: The `VITE_GOOGLE_CLIENT_SECRET` environment variable is not set.
+**Cause**: The `VITE_GOOGLE_CLIENT_ID` environment variable is not set.
 
 **Solution**:
 1. Make sure you've created a `.env` file
-2. Verify the client secret is correctly copied
+2. Verify the client ID is correctly copied
 3. Restart the dev server after changing `.env`
 
 ### Error: "Access blocked: This app's request is invalid"
@@ -142,29 +157,29 @@ When deploying to production:
    - Add your production domain's JavaScript origin
    - Add your production domain's callback URI
 
-2. **Set Environment Variables** in your hosting platform:
-   - `VITE_GOOGLE_CLIENT_ID`
-   - `VITE_GOOGLE_CLIENT_SECRET`
+2. **Set Environment Variable** in your hosting platform:
+   - `VITE_GOOGLE_CLIENT_ID` (that's all you need!)
 
 3. **Consider App Verification**:
    - For public use, submit your app for Google verification
    - This removes the "unverified app" warning for users
 
 4. **Security Considerations**:
-   - The client secret will be visible in your JavaScript bundle
-   - Ensure your redirect URIs are strictly configured
-   - Monitor API usage in Google Cloud Console
+   - ✅ PKCE provides security without secrets
+   - ✅ Ensure your redirect URIs are strictly configured
+   - ✅ Monitor API usage in Google Cloud Console
+   - ✅ Only authorized redirect URIs can receive tokens
 
-## Alternative Setup (More Secure)
+## Why No Backend is Needed
 
-For better security, you can add a minimal backend:
+With PKCE, you don't need a backend to "protect" secrets:
 
-1. Create a serverless function (e.g., Vercel, Netlify, or Cloudflare Workers)
-2. Keep the client secret on the server
-3. Have the backend handle token exchange
-4. Frontend calls your backend instead of Google directly
+- **No secret exists** - PKCE uses cryptographic challenge/response
+- **Simpler architecture** - Pure frontend, no server costs
+- **Better privacy** - All data stays in the user's browser
+- **Fully open source** - Users can verify no data is sent to your servers
 
-This approach keeps the client secret truly secret but requires a backend component.
+This is the recommended approach for public clients and is more secure than trying to "hide" a client secret in a backend.
 
 ## Resources
 

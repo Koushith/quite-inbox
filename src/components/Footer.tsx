@@ -1,9 +1,33 @@
-import { Heart } from 'lucide-react'
+import { Heart, Github, Code } from 'lucide-react'
 
 export default function Footer() {
   return (
     <footer className="border-t bg-white mt-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {/* OSS Banner */}
+        <div className="mb-4 pb-4 border-b border-gray-100">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-gray-900 rounded-lg flex items-center justify-center">
+                <Code className="w-4 h-4 text-white" />
+              </div>
+              <div className="text-sm">
+                <div className="font-bold text-gray-900">100% Open Source & Free Forever</div>
+                <div className="text-xs text-gray-600">Privacy-first, no data collection</div>
+              </div>
+            </div>
+            <a
+              href="https://github.com/Koushith/quite-inbox"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-4 py-2 bg-gray-900 hover:bg-gray-800 text-white rounded-lg font-semibold text-sm transition-colors shadow-sm"
+            >
+              <Github className="w-4 h-4" />
+              <span>View on GitHub</span>
+            </a>
+          </div>
+        </div>
+
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           {/* Left: Built by */}
           <div className="flex items-center gap-2 text-sm">

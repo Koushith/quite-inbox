@@ -16,6 +16,7 @@ import { Toaster, toast } from 'sonner'
 import { storage } from '@/lib/storage/db'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
+import { ExternalLink, Calendar, Mail as MailIcon } from 'lucide-react'
 
 export default function SubscriptionsPage() {
   const navigate = useNavigate()
@@ -610,36 +611,58 @@ export default function SubscriptionsPage() {
 
       {/* Email Detail Drawer */}
       <Dialog open={!!selectedGroup} onOpenChange={(open) => !open && closeEmailDrawer()}>
-        <DialogContent className="max-w-2xl max-h-[85vh] flex flex-col p-0">
-          <DialogHeader className="p-6 pb-4 border-b">
-            <DialogTitle className="text-xl font-bold">
-              {selectedGroup?.displayName || selectedGroup?.domain}
-            </DialogTitle>
-            <DialogDescription className="mt-2">
-              <div className="flex flex-col gap-2 text-sm">
-                <div className="flex items-center gap-2">
-                  <span className="text-gray-600">Domain:</span>
-                  <span className="text-gray-900 font-medium">{selectedGroup?.domain}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-gray-600">Total Emails:</span>
-                  <span className="text-gray-900 font-medium">{selectedGroup?.messageCount.toLocaleString()}</span>
+        <DialogContent className="max-w-3xl max-h-[90vh] flex flex-col p-0 gap-0">
+          {/* Header */}
+          <DialogHeader className="px-6 pt-6 pb-5 bg-white border-b border-gray-200">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                <MailIcon className="w-6 h-6 text-blue-600" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <DialogTitle className="text-xl font-bold text-gray-900 mb-1">
+                  {selectedGroup?.displayName || selectedGroup?.domain}
+                </DialogTitle>
+                <DialogDescription className="text-sm text-gray-600">
+                  {selectedGroup?.domain}
+                </DialogDescription>
+                <div className="flex items-center gap-4 mt-3">
+                  <div className="flex items-center gap-2 text-sm">
+                    <MailIcon className="w-4 h-4 text-gray-400" />
+                    <span className="font-semibold text-gray-900">{selectedGroup?.messageCount.toLocaleString()}</span>
+                    <span className="text-gray-500">emails</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <Calendar className="w-4 h-4 text-gray-400" />
+                    <span className="text-gray-600">
+                      {selectedGroup && new Date(selectedGroup.lastSeen).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric'
+                      })}
+                    </span>
+                  </div>
                 </div>
               </div>
-            </DialogDescription>
+            </div>
           </DialogHeader>
 
-          <div className="flex-1 overflow-y-auto px-6 py-4">
+          {/* Content */}
+          <div className="flex-1 overflow-y-auto px-6 py-6 bg-gray-50">
             {loadingEmails ? (
-              <div className="flex items-center justify-center py-12">
+              <div className="flex items-center justify-center py-16">
                 <div className="text-center">
-                  <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mb-3"></div>
-                  <p className="text-gray-600">Loading emails...</p>
+                  <div className="inline-block animate-spin rounded-full h-10 w-10 border-3 border-blue-600 border-t-transparent mb-4"></div>
+                  <p className="text-gray-600 font-medium">Loading emails...</p>
+                  <p className="text-xs text-gray-500 mt-1">Fetching from Gmail</p>
                 </div>
               </div>
             ) : emails.length === 0 ? (
-              <div className="text-center py-12 text-gray-500">
-                No emails found
+              <div className="text-center py-16">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <MailIcon className="w-8 h-8 text-gray-400" />
+                </div>
+                <p className="text-gray-600 font-medium">No emails found</p>
+                <p className="text-xs text-gray-500 mt-1">This sender has no emails in your inbox</p>
               </div>
             ) : (
               <div className="space-y-3">
@@ -652,37 +675,33 @@ export default function SubscriptionsPage() {
                   return (
                     <div
                       key={email.id || index}
-                      className="border border-gray-200 rounded-lg p-4 hover:border-gray-300 transition-colors bg-white"
+                      className="bg-white border-0 rounded-xl p-5 hover:shadow-md transition-all cursor-pointer group"
+                      onClick={() => window.open(gmailUrl, '_blank')}
                     >
-                      <div className="flex items-start justify-between gap-3 mb-2">
-                        <h3 className="font-semibold text-gray-900 flex-1 line-clamp-2">
+                      <div className="flex items-start justify-between gap-3 mb-3">
+                        <h3 className="font-semibold text-gray-900 flex-1 line-clamp-2 group-hover:text-blue-600 transition-colors">
                           {subject}
                         </h3>
-                        <div className="flex items-center gap-2">
-                          {date && (
-                            <span className="text-xs text-gray-500 whitespace-nowrap">
-                              {new Date(date).toLocaleDateString('en-US', {
-                                month: 'short',
-                                day: 'numeric',
-                                year: 'numeric'
-                              })}
-                            </span>
-                          )}
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="h-7 px-2 text-xs"
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              window.open(gmailUrl, '_blank')
-                            }}
-                          >
-                            Open in Gmail
-                          </Button>
-                        </div>
+                        <ExternalLink className="w-4 h-4 text-gray-400 group-hover:text-blue-600 transition-colors flex-shrink-0" />
                       </div>
+
+                      {date && (
+                        <div className="flex items-center gap-2 mb-2">
+                          <Calendar className="w-3.5 h-3.5 text-gray-400" />
+                          <span className="text-xs text-gray-500">
+                            {new Date(date).toLocaleDateString('en-US', {
+                              month: 'long',
+                              day: 'numeric',
+                              year: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}
+                          </span>
+                        </div>
+                      )}
+
                       {snippet && (
-                        <p className="text-sm text-gray-600 line-clamp-2">
+                        <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
                           {snippet}
                         </p>
                       )}
@@ -693,11 +712,17 @@ export default function SubscriptionsPage() {
             )}
           </div>
 
-          <DialogFooter className="p-6 pt-4 border-t">
-            <Button variant="outline" onClick={closeEmailDrawer}>
+          {/* Footer */}
+          <div className="px-6 py-4 bg-white border-t flex items-center justify-between">
+            <div className="text-sm text-gray-500">
+              {!loadingEmails && emails.length > 0 && (
+                <span>{emails.length} email{emails.length !== 1 ? 's' : ''} loaded</span>
+              )}
+            </div>
+            <Button variant="outline" onClick={closeEmailDrawer} className="font-semibold">
               Close
             </Button>
-          </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
 

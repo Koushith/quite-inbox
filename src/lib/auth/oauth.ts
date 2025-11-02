@@ -1,6 +1,18 @@
 import type { OAuthTokens, OAuthState } from '@/types'
 
 // OAuth configuration
+// NOTE: We use PKCE (Proof Key for Code Exchange) flow.
+//
+// IMPORTANT: Google Cloud Console OAuth client type:
+// - Create a "Desktop app" (NOT "Web application") OAuth client
+// - Desktop app clients work best with PKCE and localhost redirects
+// - No need to configure authorized JavaScript origins or redirect URIs
+// - The client_secret is optional but harmless if provided
+//
+// Security context:
+// - PKCE provides cryptographic protection without requiring secrets
+// - Perfect for local-first PWAs and open source projects
+// - The code_verifier/code_challenge pair is what protects the flow
 const OAUTH_CONFIG = {
   clientId: import.meta.env.VITE_GOOGLE_CLIENT_ID || '',
   clientSecret: import.meta.env.VITE_GOOGLE_CLIENT_SECRET || '',
@@ -113,22 +125,26 @@ export async function handleOAuthCallback(code: string, state: string): Promise<
     throw new Error('Google Client ID not configured.')
   }
 
-  // Exchange authorization code for tokens
-  const params = new URLSearchParams({
+  // Exchange authorization code for tokens with PKCE
+  const tokenParams: Record<string, string> = {
     client_id: OAUTH_CONFIG.clientId,
-    client_secret: OAUTH_CONFIG.clientSecret,
     code,
     code_verifier: savedState.codeVerifier,
     grant_type: 'authorization_code',
     redirect_uri: OAUTH_CONFIG.redirectUri,
-  })
+  }
+
+  // Include client_secret only if provided (optional for Desktop app with PKCE)
+  if (OAUTH_CONFIG.clientSecret) {
+    tokenParams.client_secret = OAUTH_CONFIG.clientSecret
+  }
 
   const response = await fetch(OAUTH_CONFIG.tokenEndpoint, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
     },
-    body: params.toString(),
+    body: new URLSearchParams(tokenParams).toString(),
   })
 
   if (!response.ok) {
@@ -142,6 +158,17 @@ export async function handleOAuthCallback(code: string, state: string): Promise<
       has_verifier: !!savedState.codeVerifier,
       has_secret: !!OAUTH_CONFIG.clientSecret,
     })
+
+    // Provide helpful error messages
+    if (error.error === 'invalid_client') {
+      throw new Error(
+        'OAuth client configuration error. Please ensure:\n' +
+        '1. You created a "Desktop app" OAuth client in Google Cloud Console\n' +
+        '2. The Client ID in .env matches your OAuth client\n' +
+        '3. If using "Web application" type, add http://localhost:5173/oauth/callback to authorized redirect URIs'
+      )
+    }
+
     throw new Error(`Token exchange failed: ${error.error_description || error.error || response.statusText}`)
   }
 
@@ -159,24 +186,29 @@ export async function refreshAccessToken(refreshToken: string): Promise<OAuthTok
     throw new Error('Google Client ID not configured.')
   }
 
-  const params = new URLSearchParams({
+  // Build refresh token request
+  const refreshParams: Record<string, string> = {
     client_id: OAUTH_CONFIG.clientId,
-    client_secret: OAUTH_CONFIG.clientSecret,
     refresh_token: refreshToken,
     grant_type: 'refresh_token',
-  })
+  }
+
+  // Include client_secret only if provided
+  if (OAUTH_CONFIG.clientSecret) {
+    refreshParams.client_secret = OAUTH_CONFIG.clientSecret
+  }
 
   const response = await fetch(OAUTH_CONFIG.tokenEndpoint, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
     },
-    body: params.toString(),
+    body: new URLSearchParams(refreshParams).toString(),
   })
 
   if (!response.ok) {
-    const error = await response.json()
-    throw new Error(`Token refresh failed: ${error.error_description || error.error}`)
+    const error = await response.json().catch(() => ({}))
+    throw new Error(`Token refresh failed: ${error.error_description || error.error || response.statusText}`)
   }
 
   const newTokens: OAuthTokens = await response.json()
