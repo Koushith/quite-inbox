@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAppStore } from '@/stores/appStore'
+import { extractEmail } from '@/lib/parsers/headers'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -16,7 +17,8 @@ import { Toaster, toast } from 'sonner'
 import { storage } from '@/lib/storage/db'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
-import { ExternalLink, Calendar, Mail as MailIcon } from 'lucide-react'
+import { ExternalLink, Calendar, Mail as MailIcon, Trash2, Check } from 'lucide-react'
+import { Checkbox } from '@/components/ui/checkbox'
 
 export default function SubscriptionsPage() {
   const navigate = useNavigate()
@@ -30,6 +32,7 @@ export default function SubscriptionsPage() {
     return saved ? new Set(JSON.parse(saved)) : new Set()
   })
   const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set())
+  const [scanTimeWindow, setScanTimeWindow] = useState<'3d' | '7d' | '3m' | '6m' | '12m' | 'all' | undefined>(undefined)
 
   // Dialog state
   const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; group: SenderGroup | null }>({
@@ -42,9 +45,21 @@ export default function SubscriptionsPage() {
   const [selectedGroup, setSelectedGroup] = useState<SenderGroup | null>(null)
   const [emails, setEmails] = useState<any[]>([])
   const [loadingEmails, setLoadingEmails] = useState(false)
+  const [deletingEmailIds, setDeletingEmailIds] = useState<Set<string>>(new Set())
+  const [selectedEmailIds, setSelectedEmailIds] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     loadGroups()
+
+    // Load scan checkpoint to get time window
+    storage.getScanCheckpoint().then(checkpoint => {
+      if (checkpoint?.scanRange) {
+        setScanTimeWindow(checkpoint.scanRange)
+      } else {
+        // If no checkpoint exists, default to 'all' to show all available data
+        setScanTimeWindow('all')
+      }
+    })
   }, [loadGroups])
 
   // Save unsubscribed state to localStorage
@@ -52,21 +67,30 @@ export default function SubscriptionsPage() {
     localStorage.setItem('unsubscribedIds', JSON.stringify([...unsubscribedIds]))
   }, [unsubscribedIds])
 
-  // Fetch emails when a group is selected
+  // Fetch emails when a group is selected or scanTimeWindow changes
   useEffect(() => {
-    if (selectedGroup) {
+    if (selectedGroup && scanTimeWindow !== undefined) {
       fetchEmails(selectedGroup)
     }
-  }, [selectedGroup])
+  }, [selectedGroup, scanTimeWindow])
 
   const fetchEmails = async (group: SenderGroup) => {
+    const senderEmail = extractEmail(group.domain) || group.domain
+    console.log('📧 Fetching emails for group:', {
+      displayName: group.displayName,
+      domain: group.domain,
+      extractedEmail: senderEmail,
+      timeWindow: scanTimeWindow,
+      messageCount: group.messageCount
+    })
     setLoadingEmails(true)
     setEmails([])
 
     try {
       const { getMessagesBySender, batchGetMetadata } = await import('@/lib/api/gmail')
-      // Fetch all emails from this sender (up to 1000)
-      const messageIds = await getMessagesBySender(group.domain)
+      // Fetch emails from this sender within the scan time window
+      const messageIds = await getMessagesBySender(senderEmail, 1000, scanTimeWindow)
+      console.log('✅ Found', messageIds.length, 'messages within', scanTimeWindow, 'window (expected:', group.messageCount, ')')
 
       if (messageIds.length > 0) {
         const metadata = await batchGetMetadata(messageIds)
@@ -87,6 +111,129 @@ export default function SubscriptionsPage() {
   const closeEmailDrawer = () => {
     setSelectedGroup(null)
     setEmails([])
+    setSelectedEmailIds(new Set())
+  }
+
+  const toggleEmailSelection = (emailId: string) => {
+    setSelectedEmailIds(prev => {
+      const next = new Set(prev)
+      if (next.has(emailId)) {
+        next.delete(emailId)
+      } else {
+        next.add(emailId)
+      }
+      return next
+    })
+  }
+
+  const toggleSelectAll = () => {
+    if (selectedEmailIds.size === emails.length) {
+      setSelectedEmailIds(new Set())
+    } else {
+      setSelectedEmailIds(new Set(emails.map(e => e.id)))
+    }
+  }
+
+  const handleDeleteSingleEmail = async (emailId: string, subject: string) => {
+    if (!selectedGroup) return
+
+    // Optimistic UI update
+    setDeletingEmailIds(prev => new Set(prev).add(emailId))
+
+    try {
+      const { trashMessages } = await import('@/lib/api/gmail')
+      await trashMessages([emailId])
+
+      // Remove from local list
+      setEmails(prev => prev.filter(e => e.id !== emailId))
+
+      // Update group message count
+      if (selectedGroup) {
+        const updatedGroup = { ...selectedGroup, messageCount: selectedGroup.messageCount - 1 }
+        await storage.saveSenderGroup(updatedGroup)
+        await loadGroups()
+      }
+
+      await addActionLog({
+        id: crypto.randomUUID(),
+        ts: new Date().toISOString(),
+        groupId: selectedGroup.id,
+        action: 'delete',
+        count: 1,
+        result: 'success',
+      })
+
+      toast.success('Email deleted', {
+        description: subject.length > 50 ? subject.substring(0, 50) + '...' : subject
+      })
+    } catch (error) {
+      console.error('Failed to delete email:', error)
+      toast.error('Failed to delete email')
+    } finally {
+      setDeletingEmailIds(prev => {
+        const next = new Set(prev)
+        next.delete(emailId)
+        return next
+      })
+    }
+  }
+
+  const handleDeleteSelectedEmails = async () => {
+    if (!selectedGroup || selectedEmailIds.size === 0) return
+
+    const emailIdsToDelete = Array.from(selectedEmailIds)
+    const count = emailIdsToDelete.length
+
+    // Optimistic UI update
+    emailIdsToDelete.forEach(id => {
+      setDeletingEmailIds(prev => new Set(prev).add(id))
+    })
+
+    try {
+      const { trashMessages } = await import('@/lib/api/gmail')
+
+      // Delete in batches of 1000 (Gmail API limit)
+      const BATCH_SIZE = 1000
+      for (let i = 0; i < emailIdsToDelete.length; i += BATCH_SIZE) {
+        const batch = emailIdsToDelete.slice(i, i + BATCH_SIZE)
+        await trashMessages(batch)
+      }
+
+      // Remove from local list
+      setEmails(prev => prev.filter(e => !selectedEmailIds.has(e.id)))
+      setSelectedEmailIds(new Set())
+
+      // Update group message count
+      if (selectedGroup) {
+        const updatedGroup = { ...selectedGroup, messageCount: selectedGroup.messageCount - count }
+        await storage.saveSenderGroup(updatedGroup)
+        await loadGroups()
+      }
+
+      await addActionLog({
+        id: crypto.randomUUID(),
+        ts: new Date().toISOString(),
+        groupId: selectedGroup.id,
+        action: 'delete',
+        count,
+        result: 'success',
+      })
+
+      toast.success(`Deleted ${count.toLocaleString()} email${count > 1 ? 's' : ''}`, {
+        description: 'Emails moved to trash'
+      })
+    } catch (error) {
+      console.error('Failed to delete emails:', error)
+      toast.error('Failed to delete emails')
+    } finally {
+      emailIdsToDelete.forEach(id => {
+        setDeletingEmailIds(prev => {
+          const next = new Set(prev)
+          next.delete(id)
+          return next
+        })
+      })
+    }
   }
 
   const handleUnsubscribe = async (group: SenderGroup) => {
@@ -162,7 +309,7 @@ export default function SubscriptionsPage() {
 
     toast.promise(
       (async () => {
-        const { result, count } = await executeCleanup(group, { mode: 'trash', keepLast: 0 })
+        const { result, count } = await executeCleanup(group, { mode: 'trash', keepLast: 0 }, scanTimeWindow)
 
         await addActionLog({
           id: crypto.randomUUID(),
@@ -182,8 +329,8 @@ export default function SubscriptionsPage() {
         return count
       })(),
       {
-        loading: `Deleting ${group.messageCount} emails...`,
-        success: (count) => `Deleted ${count} emails successfully`,
+        loading: `Deleting ${group.messageCount.toLocaleString()} emails...`,
+        success: (count) => `✓ Deleted ${count.toLocaleString()} emails successfully`,
         error: 'Failed to delete emails',
         finally: () => {
           setDeletingIds(prev => {
@@ -570,10 +717,12 @@ export default function SubscriptionsPage() {
           <DialogHeader>
             <DialogTitle>Delete All Emails?</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete all {deleteDialog.group?.messageCount.toLocaleString()} emails from{' '}
+              Are you sure you want to delete <strong className="text-destructive">{deleteDialog.group?.messageCount.toLocaleString()}</strong> emails from{' '}
               <strong>{deleteDialog.group?.displayName || deleteDialog.group?.domain}</strong>?
               <br /><br />
-              Emails will be moved to trash and can be recovered for 30 days.
+              <span className="text-muted-foreground text-xs">
+                ⚠️ Emails will be moved to trash and can be recovered for 30 days.
+              </span>
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -581,7 +730,7 @@ export default function SubscriptionsPage() {
               Cancel
             </Button>
             <Button variant="destructive" onClick={handleDeleteAll}>
-              Delete All
+              Delete {deleteDialog.group?.messageCount.toLocaleString()} Emails
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -619,9 +768,26 @@ export default function SubscriptionsPage() {
                 <MailIcon className="w-6 h-6 text-blue-600" />
               </div>
               <div className="flex-1 min-w-0">
-                <DialogTitle className="text-xl font-bold text-gray-900 mb-1">
-                  {selectedGroup?.displayName || selectedGroup?.domain}
-                </DialogTitle>
+                <div className="flex items-center justify-between mb-1">
+                  <DialogTitle className="text-xl font-bold text-gray-900">
+                    {selectedGroup?.displayName || selectedGroup?.domain}
+                  </DialogTitle>
+                  {emails.length > 0 && (
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        id="select-all"
+                        checked={selectedEmailIds.size === emails.length && emails.length > 0}
+                        onCheckedChange={toggleSelectAll}
+                      />
+                      <label
+                        htmlFor="select-all"
+                        className="text-sm font-medium text-gray-700 cursor-pointer"
+                      >
+                        Select All
+                      </label>
+                    </div>
+                  )}
+                </div>
                 <DialogDescription className="text-sm text-gray-600">
                   {selectedGroup?.domain}
                 </DialogDescription>
@@ -671,18 +837,47 @@ export default function SubscriptionsPage() {
                   const date = email.headers?.find((h: any) => h.name === 'Date')?.value
                   const snippet = email.snippet || ''
                   const gmailUrl = `https://mail.google.com/mail/u/0/#inbox/${email.id}`
+                  const isDeleting = deletingEmailIds.has(email.id)
 
                   return (
                     <div
                       key={email.id || index}
-                      className="bg-white border-0 rounded-xl p-5 hover:shadow-md transition-all cursor-pointer group"
-                      onClick={() => window.open(gmailUrl, '_blank')}
+                      className={`bg-white border-0 rounded-xl p-5 hover:shadow-md transition-all group relative ${
+                        isDeleting ? 'opacity-50' : ''
+                      } ${selectedEmailIds.has(email.id) ? 'ring-2 ring-blue-500' : ''}`}
                     >
-                      <div className="flex items-start justify-between gap-3 mb-3">
-                        <h3 className="font-semibold text-gray-900 flex-1 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                      <div className="flex items-start gap-3 mb-3">
+                        <Checkbox
+                          checked={selectedEmailIds.has(email.id)}
+                          onCheckedChange={() => toggleEmailSelection(email.id)}
+                          className="mt-1"
+                        />
+                        <h3 className="font-semibold text-gray-900 flex-1 line-clamp-2">
                           {subject}
                         </h3>
-                        <ExternalLink className="w-4 h-4 text-gray-400 group-hover:text-blue-600 transition-colors flex-shrink-0" />
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              handleDeleteSingleEmail(email.id, subject)
+                            }}
+                            disabled={isDeleting}
+                            className="p-2 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
+                            title="Delete email"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              window.open(gmailUrl, '_blank')
+                            }}
+                            className="p-2 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                            title="View in Gmail"
+                          >
+                            <ExternalLink className="w-4 h-4" />
+                          </button>
+                        </div>
                       </div>
 
                       {date && (
@@ -714,9 +909,27 @@ export default function SubscriptionsPage() {
 
           {/* Footer */}
           <div className="px-6 py-4 bg-white border-t flex items-center justify-between">
-            <div className="text-sm text-gray-500">
-              {!loadingEmails && emails.length > 0 && (
-                <span>{emails.length} email{emails.length !== 1 ? 's' : ''} loaded</span>
+            <div className="flex items-center gap-4">
+              <div className="text-sm text-gray-500">
+                {!loadingEmails && emails.length > 0 && (
+                  <span>{emails.length} email{emails.length !== 1 ? 's' : ''} loaded</span>
+                )}
+              </div>
+              {selectedEmailIds.size > 0 && (
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium text-blue-600">
+                    {selectedEmailIds.size} selected
+                  </span>
+                  <Button
+                    onClick={handleDeleteSelectedEmails}
+                    variant="destructive"
+                    size="sm"
+                    className="font-semibold"
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Delete Selected
+                  </Button>
+                </div>
               )}
             </div>
             <Button variant="outline" onClick={closeEmailDrawer} className="font-semibold">

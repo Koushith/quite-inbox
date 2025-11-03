@@ -67,6 +67,14 @@ export default function ScanPage() {
       await storage.saveSenderGroups(groups)
       await useAppStore.getState().loadGroups()
 
+      // Save scan checkpoint with time window
+      await storage.saveScanCheckpoint({
+        lastScanTime: new Date().toISOString(),
+        processedMessageIds: [],
+        scanRange: timeWindow,
+        categories: ['promotions', 'forums', 'updates']
+      })
+
       setScanState({ isScanning: false })
 
       if (groups.length === 0) {

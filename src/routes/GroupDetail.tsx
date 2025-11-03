@@ -9,6 +9,7 @@ import type { SenderGroup, CleanupPolicy, GmailMessageMetadata } from '@/types'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Loader2 } from 'lucide-react'
 import Footer from '@/components/Footer'
 
 export default function GroupDetailPage() {
@@ -17,11 +18,34 @@ export default function GroupDetailPage() {
   const { addActionLog } = useAppStore()
   const [group, setGroup] = useState<SenderGroup | null>(null)
   const [loading, setLoading] = useState(false)
+  const [unsubscribing, setUnsubscribing] = useState(false)
+  const [unsubscribed, setUnsubscribed] = useState<boolean>(() => {
+    // Load unsubscribed state from localStorage
+    if (id) {
+      const saved = localStorage.getItem('unsubscribedIds')
+      if (saved) {
+        const unsubscribedIds = new Set(JSON.parse(saved))
+        return unsubscribedIds.has(decodeURIComponent(id))
+      }
+    }
+    return false
+  })
   const [sampleEmails, setSampleEmails] = useState<GmailMessageMetadata[]>([])
   const [loadingEmails, setLoadingEmails] = useState(false)
+  const [scanTimeWindow, setScanTimeWindow] = useState<'3d' | '7d' | '3m' | '6m' | '12m' | 'all' | undefined>(undefined)
 
   useEffect(() => {
     if (id) {
+      // Load scan checkpoint to get time window
+      storage.getScanCheckpoint().then(checkpoint => {
+        if (checkpoint?.scanRange) {
+          setScanTimeWindow(checkpoint.scanRange)
+        } else {
+          // If no checkpoint exists, default to 'all' to show all available data
+          setScanTimeWindow('all')
+        }
+      })
+
       storage.getSenderGroup(decodeURIComponent(id)).then(g => {
         console.log('🔍 Loaded group:', {
           id: g?.id,
@@ -32,14 +56,16 @@ export default function GroupDetailPage() {
           fullGroup: g
         })
         setGroup(g || null)
-
-        // Load sample emails
-        if (g) {
-          loadSampleEmails(g)
-        }
       })
     }
   }, [id])
+
+  // Load sample emails when group or scanTimeWindow changes
+  useEffect(() => {
+    if (group && scanTimeWindow !== undefined) {
+      loadSampleEmails(group)
+    }
+  }, [group, scanTimeWindow])
 
   const loadSampleEmails = async (grp: SenderGroup) => {
     setLoadingEmails(true)
@@ -48,11 +74,12 @@ export default function GroupDetailPage() {
       console.log('📨 Loading sample emails for:', {
         groupDomain: grp.domain,
         groupDisplayName: grp.displayName,
-        extractedEmail: senderEmail
+        extractedEmail: senderEmail,
+        timeWindow: scanTimeWindow
       })
 
-      const messageIds = await getMessagesBySender(senderEmail, 5)
-      console.log('📬 Found message IDs:', messageIds)
+      const messageIds = await getMessagesBySender(senderEmail, 5, scanTimeWindow)
+      console.log('📬 Found', messageIds.length, 'message IDs within', scanTimeWindow, 'window')
 
       // Get metadata for sample messages
       const emails = await Promise.all(
@@ -75,7 +102,7 @@ export default function GroupDetailPage() {
   const handleUnsubscribe = async () => {
     if (!group) return
 
-    setLoading(true)
+    setUnsubscribing(true)
     const result = await executeUnsubscribe(group)
 
     await addActionLog({
@@ -87,27 +114,35 @@ export default function GroupDetailPage() {
       result,
     })
 
-    setLoading(false)
+    setUnsubscribing(false)
     if (result === 'success') {
-      alert('Unsubscribe request sent!')
+      setUnsubscribed(true)
+
+      // Save to localStorage
+      const saved = localStorage.getItem('unsubscribedIds')
+      const unsubscribedIds = saved ? new Set(JSON.parse(saved)) : new Set()
+      unsubscribedIds.add(group.id)
+      localStorage.setItem('unsubscribedIds', JSON.stringify([...unsubscribedIds]))
+    } else {
+      alert('Failed to unsubscribe. Please try again.')
     }
   }
 
   const handleCleanup = async (policy: CleanupPolicy) => {
     if (!group) return
 
-    const count = await estimateCleanupCount(group, policy)
+    const count = await estimateCleanupCount(group, policy, scanTimeWindow)
 
     // Build detailed confirmation message
-    let confirmMsg = `This will ${policy.mode === 'trash' ? 'move to trash' : 'archive'} ${count} messages from ${group.displayName || group.domain}.\n\n`
+    let confirmMsg = `This will ${policy.mode === 'trash' ? 'move to trash' : 'archive'} ${count.toLocaleString()} messages from ${group.displayName || group.domain}.\n\n`
 
     if (policy.keepLast) {
       confirmMsg += `• Keeps the ${policy.keepLast} most recent emails\n`
-      confirmMsg += `• ${policy.mode === 'trash' ? 'Moves to trash' : 'Archives'} all older emails (${count} messages)\n`
+      confirmMsg += `• ${policy.mode === 'trash' ? 'Moves to trash' : 'Archives'} all older emails (${count.toLocaleString()} messages)\n`
     } else if (policy.olderThanDays) {
       confirmMsg += `• Only affects emails older than ${policy.olderThanDays} days\n`
       confirmMsg += `• Recent emails (last ${policy.olderThanDays} days) will NOT be touched\n`
-      confirmMsg += `• ${count} older messages will be ${policy.mode === 'trash' ? 'moved to trash' : 'archived'}\n`
+      confirmMsg += `• ${count.toLocaleString()} older messages will be ${policy.mode === 'trash' ? 'moved to trash' : 'archived'}\n`
     }
 
     confirmMsg += `\n${policy.mode === 'trash' ? '⚠️ Emails will be moved to trash (recoverable for 30 days)' : '📁 Emails will be archived (still searchable, just removed from inbox)'}\n\nContinue?`
@@ -117,7 +152,7 @@ export default function GroupDetailPage() {
     }
 
     setLoading(true)
-    const { result, count: actualCount } = await executeCleanup(group, policy)
+    const { result, count: actualCount } = await executeCleanup(group, policy, scanTimeWindow)
 
     await addActionLog({
       id: crypto.randomUUID(),
@@ -129,7 +164,7 @@ export default function GroupDetailPage() {
     })
 
     setLoading(false)
-    alert(`✓ ${actualCount} messages ${policy.mode === 'trash' ? 'moved to trash' : 'archived'} successfully!`)
+    alert(`✓ ${actualCount.toLocaleString()} messages ${policy.mode === 'trash' ? 'moved to trash' : 'archived'} successfully!`)
   }
 
   if (!group) {
@@ -338,47 +373,82 @@ export default function GroupDetailPage() {
           {/* Right Column - Actions */}
           <div className="space-y-6">
             {/* Unsubscribe Card */}
-            <Card className="border-primary/20 bg-primary/5">
+            <Card className={unsubscribed ? "border-green-200 bg-green-50" : "border-primary/20 bg-primary/5"}>
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
-                  <span>📧</span> Unsubscribe
+                  {unsubscribed ? (
+                    <>
+                      <span>✓</span> Unsubscribed
+                    </>
+                  ) : (
+                    <>
+                      <span>📧</span> Unsubscribe
+                    </>
+                  )}
                 </CardTitle>
                 <CardDescription>
-                  {group.unsubscribe.kind === 'unknown'
+                  {unsubscribed
+                    ? 'Successfully unsubscribed. You can now delete all emails from this sender.'
+                    : group.unsubscribe.kind === 'unknown'
                     ? 'No automatic unsubscribe method available'
                     : group.unsubscribe.kind === 'one-click'
                     ? 'One-click unsubscribe available'
                     : group.unsubscribe.kind === 'http'
-                    ? 'Opens unsubscribe page in new tab'
+                    ? 'Unsubscribe in-app without opening new tab'
                     : 'Composes unsubscribe email'}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Button
-                  onClick={handleUnsubscribe}
-                  disabled={loading || group.unsubscribe.kind === 'unknown'}
-                  className="w-full"
-                  size="lg"
-                  variant={group.unsubscribe.kind === 'one-click' ? 'default' : 'outline'}
-                >
-                  {group.unsubscribe.kind === 'unknown'
-                    ? '✗ No Method Available'
-                    : group.unsubscribe.kind === 'one-click'
-                    ? '✓ One-Click Unsubscribe'
-                    : group.unsubscribe.kind === 'http'
-                    ? '🔗 Open Unsubscribe Page'
-                    : '✉️ Compose Unsubscribe Email'
-                  }
-                </Button>
+                {unsubscribed ? (
+                  <Button
+                    onClick={() => handleCleanup({ mode: 'trash', keepLast: 0 })}
+                    disabled={loading}
+                    className="w-full bg-red-600 hover:bg-red-700"
+                    size="lg"
+                    variant="destructive"
+                  >
+                    {loading ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Deleting...
+                      </>
+                    ) : (
+                      '🗑️ Delete All Emails'
+                    )}
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={handleUnsubscribe}
+                    disabled={unsubscribing || group.unsubscribe.kind === 'unknown'}
+                    className="w-full"
+                    size="lg"
+                    variant={group.unsubscribe.kind === 'one-click' ? 'default' : 'outline'}
+                  >
+                    {unsubscribing ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Unsubscribing...
+                      </>
+                    ) : group.unsubscribe.kind === 'unknown' ? (
+                      '✗ No Method Available'
+                    ) : group.unsubscribe.kind === 'one-click' ? (
+                      '✓ One-Click Unsubscribe'
+                    ) : group.unsubscribe.kind === 'http' ? (
+                      '🔗 Unsubscribe Now'
+                    ) : (
+                      '✉️ Compose Unsubscribe Email'
+                    )}
+                  </Button>
+                )}
 
-                {group.unsubscribe.kind === 'unknown' && (
+                {!unsubscribed && group.unsubscribe.kind === 'unknown' && (
                   <p className="text-xs text-muted-foreground">
                     This sender doesn't provide a standard unsubscribe method.
                     You may need to unsubscribe manually or mark as spam.
                   </p>
                 )}
 
-                {group.unsubscribe.url && (
+                {!unsubscribed && group.unsubscribe.url && (
                   <div className="text-xs text-muted-foreground pt-2 border-t">
                     <span className="font-medium">Direct link:</span>
                     <a

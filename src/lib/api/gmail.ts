@@ -310,10 +310,36 @@ export async function createFilter(filter: GmailFilter): Promise<void> {
 // Get messages by sender
 export async function getMessagesBySender(
   senderEmail: string,
-  maxResults = 1000
+  maxResults = 1000,
+  timeWindow?: '3d' | '7d' | '3m' | '6m' | '12m' | 'all',
+  includeCategories = true
 ): Promise<string[]> {
-  const query = `from:${senderEmail}`
+  let query = `from:${senderEmail}`
+
+  // Add category filter to match what was scanned
+  if (includeCategories) {
+    query = `(${query}) (category:promotions OR category:forums OR category:updates)`
+  }
+
+  // Add time filter if provided
+  if (timeWindow && timeWindow !== 'all') {
+    const timeMap: Record<string, string> = {
+      '3d': '3d',
+      '7d': '7d',
+      '3m': '3m',
+      '6m': '6m',
+      '12m': '1y',
+    }
+    query += ` newer_than:${timeMap[timeWindow]}`
+  }
+
+  console.log('🔍 Gmail Query:', query, 'maxResults:', maxResults)
   const response = await listMessages({ query, maxResults })
+  console.log('📬 Gmail Response:', {
+    messagesFound: response.messages?.length || 0,
+    resultSizeEstimate: response.resultSizeEstimate,
+    hasNextPage: !!response.nextPageToken
+  })
 
   return response.messages?.map(m => m.id) || []
 }
