@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Shield, Lock, Code, Database, Trash2, Download } from 'lucide-react';
+import { Shield, Lock, Code, Database, Download } from 'lucide-react';
 
 export default function PrivacyPage() {
   return (
@@ -65,36 +65,38 @@ export default function PrivacyPage() {
             <h2 className="text-2xl font-bold text-black mb-4">Introduction</h2>
             <p className="text-gray-700 leading-relaxed">
               QuiteInbox is a free, open-source email management tool that helps you unsubscribe from unwanted emails.
-              This privacy policy explains how we handle your data. The short version: we don't. Everything stays on your device.
+              This privacy policy explains how we handle your data. The short version: we don't. Everything stays on
+              your device.
             </p>
           </section>
 
           <section>
             <h2 className="text-2xl font-bold text-black mb-4">What Data We Access</h2>
             <p className="text-gray-700 leading-relaxed mb-4">
-              QuiteInbox requests permission to access your Gmail account through Google's OAuth system.
-              We request three specific permissions (scopes):
+              QuiteInbox requests permission to access your Gmail account through Google's OAuth system. We request
+              three specific permissions (scopes):
             </p>
             <div className="space-y-4">
               <div className="border-l-4 border-black pl-4">
                 <h3 className="font-semibold text-black mb-1">Read Email Headers (gmail.readonly)</h3>
                 <p className="text-gray-600 text-sm">
-                  We read email metadata like sender names, domains, subjects, and unsubscribe links to identify subscription emails.
-                  We do not read the full content of your emails unless necessary to find an unsubscribe link.
+                  We read email metadata like sender names, domains, subjects, and unsubscribe links to identify
+                  subscription emails. We do not read the full content of your emails unless necessary to find an
+                  unsubscribe link.
                 </p>
               </div>
               <div className="border-l-4 border-black pl-4">
                 <h3 className="font-semibold text-black mb-1">Modify Emails (gmail.modify)</h3>
                 <p className="text-gray-600 text-sm">
-                  We can delete or archive emails, and create Gmail filters. This only happens when you explicitly request it
-                  by clicking buttons like "Delete old emails" or "Create filter".
+                  We can delete or archive emails, and create Gmail filters. This only happens when you explicitly
+                  request it by clicking buttons like "Delete old emails" or "Create filter".
                 </p>
               </div>
               <div className="border-l-4 border-black pl-4">
                 <h3 className="font-semibold text-black mb-1">Send Emails (gmail.send)</h3>
                 <p className="text-gray-600 text-sm">
-                  We can send emails on your behalf to unsubscribe from senders that require an email-based unsubscribe method
-                  (when one-click unsubscribe is not available).
+                  We can send emails on your behalf to unsubscribe from senders that require an email-based unsubscribe
+                  method (when one-click unsubscribe is not available).
                 </p>
               </div>
             </div>
@@ -105,27 +107,39 @@ export default function PrivacyPage() {
             <ul className="space-y-2 text-gray-700">
               <li className="flex items-start space-x-2">
                 <span className="text-black mt-1">•</span>
-                <span>We do <strong>not</strong> send your email content to any server</span>
+                <span>
+                  We do <strong>not</strong> send your email content to any server
+                </span>
               </li>
               <li className="flex items-start space-x-2">
                 <span className="text-black mt-1">•</span>
-                <span>We do <strong>not</strong> store your data on any server or database</span>
+                <span>
+                  We do <strong>not</strong> store your data on any server or database
+                </span>
               </li>
               <li className="flex items-start space-x-2">
                 <span className="text-black mt-1">•</span>
-                <span>We do <strong>not</strong> track your usage with analytics tools</span>
+                <span>
+                  We do <strong>not</strong> track your usage with analytics tools
+                </span>
               </li>
               <li className="flex items-start space-x-2">
                 <span className="text-black mt-1">•</span>
-                <span>We do <strong>not</strong> sell your data to third parties</span>
+                <span>
+                  We do <strong>not</strong> sell your data to third parties
+                </span>
               </li>
               <li className="flex items-start space-x-2">
                 <span className="text-black mt-1">•</span>
-                <span>We do <strong>not</strong> share your data with advertisers</span>
+                <span>
+                  We do <strong>not</strong> share your data with advertisers
+                </span>
               </li>
               <li className="flex items-start space-x-2">
                 <span className="text-black mt-1">•</span>
-                <span>We do <strong>not</strong> use cookies for tracking (only for OAuth state)</span>
+                <span>
+                  We do <strong>not</strong> use cookies for tracking (only for OAuth state)
+                </span>
               </li>
             </ul>
           </section>
@@ -139,14 +153,15 @@ export default function PrivacyPage() {
               <div>
                 <h3 className="font-semibold text-black mb-1">IndexedDB</h3>
                 <p className="text-gray-600 text-sm">
-                  Used to store sender groups (names, domains, message counts) and action logs
-                  (history of unsubscribes and deletions). This data never leaves your browser.
+                  Used to store sender groups (names, domains, message counts) and action logs (history of unsubscribes
+                  and deletions). This data never leaves your browser.
                 </p>
               </div>
               <div>
                 <h3 className="font-semibold text-black mb-1">LocalStorage</h3>
                 <p className="text-gray-600 text-sm">
-                  Used to store your OAuth tokens (to keep you signed in) and app settings (theme, protected keywords/domains).
+                  Used to store your OAuth tokens (to keep you signed in) and app settings (theme, protected
+                  keywords/domains).
                 </p>
               </div>
               <div>
@@ -166,21 +181,34 @@ export default function PrivacyPage() {
             <ol className="space-y-2 text-gray-700 list-decimal list-inside">
               <li>Clear your browser data (Chrome: Settings → Privacy → Clear browsing data)</li>
               <li>Use the export/delete feature in QuiteInbox settings</li>
-              <li>Revoke app access at <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener noreferrer" className="text-black underline">Google Account Permissions</a></li>
+              <li>
+                Revoke app access at{' '}
+                <a
+                  href="https://myaccount.google.com/permissions"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-black underline"
+                >
+                  Google Account Permissions
+                </a>
+              </li>
             </ol>
           </section>
 
           <section>
             <h2 className="text-2xl font-bold text-black mb-4">Third-Party Services</h2>
-            <p className="text-gray-700 leading-relaxed mb-4">
-              QuiteInbox uses the following third-party services:
-            </p>
+            <p className="text-gray-700 leading-relaxed mb-4">QuiteInbox uses the following third-party services:</p>
             <div className="space-y-3">
               <div>
                 <h3 className="font-semibold text-black mb-1">Google OAuth & Gmail API</h3>
                 <p className="text-gray-600 text-sm">
                   We use Google's authentication and Gmail API to access your inbox. Google's privacy policy applies:
-                  <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="text-black underline ml-1">
+                  <a
+                    href="https://policies.google.com/privacy"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-black underline ml-1"
+                  >
                     Google Privacy Policy
                   </a>
                 </p>
@@ -188,8 +216,8 @@ export default function PrivacyPage() {
               <div>
                 <h3 className="font-semibold text-black mb-1">Hosting (Vercel)</h3>
                 <p className="text-gray-600 text-sm">
-                  Our website is hosted on Vercel. They may collect basic server logs (IP addresses, user agents) for infrastructure purposes.
-                  We do not have access to these logs.
+                  Our website is hosted on Vercel. They may collect basic server logs (IP addresses, user agents) for
+                  infrastructure purposes. We do not have access to these logs.
                 </p>
               </div>
             </div>
@@ -219,19 +247,29 @@ export default function PrivacyPage() {
             <ul className="space-y-2 text-gray-700">
               <li className="flex items-start space-x-2">
                 <span className="text-black mt-1">•</span>
-                <span><strong>Access:</strong> All your data is stored locally in your browser and is always accessible to you</span>
+                <span>
+                  <strong>Access:</strong> All your data is stored locally in your browser and is always accessible to
+                  you
+                </span>
               </li>
               <li className="flex items-start space-x-2">
                 <span className="text-black mt-1">•</span>
-                <span><strong>Deletion:</strong> Delete your data anytime by clearing browser storage or revoking OAuth access</span>
+                <span>
+                  <strong>Deletion:</strong> Delete your data anytime by clearing browser storage or revoking OAuth
+                  access
+                </span>
               </li>
               <li className="flex items-start space-x-2">
                 <span className="text-black mt-1">•</span>
-                <span><strong>Portability:</strong> Export your data as JSON from the settings page</span>
+                <span>
+                  <strong>Portability:</strong> Export your data as JSON from the settings page
+                </span>
               </li>
               <li className="flex items-start space-x-2">
                 <span className="text-black mt-1">•</span>
-                <span><strong>Rectification:</strong> Modify your settings and protected keywords/domains anytime</span>
+                <span>
+                  <strong>Rectification:</strong> Modify your settings and protected keywords/domains anytime
+                </span>
               </li>
             </ul>
           </section>
@@ -239,8 +277,9 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-2xl font-bold text-black mb-4">Changes to This Policy</h2>
             <p className="text-gray-700 leading-relaxed">
-              We may update this privacy policy from time to time. We will notify users of significant changes by updating
-              the "Last updated" date at the top of this page. Continued use of QuiteInbox after changes means you accept the updated policy.
+              We may update this privacy policy from time to time. We will notify users of significant changes by
+              updating the "Last updated" date at the top of this page. Continued use of QuiteInbox after changes means
+              you accept the updated policy.
             </p>
           </section>
 
@@ -252,7 +291,17 @@ export default function PrivacyPage() {
             <ul className="space-y-2 text-gray-700">
               <li className="flex items-start space-x-2">
                 <span className="text-black mt-1">•</span>
-                <span>Open an issue on <a href="https://github.com/Koushith/quite-inbox/issues" target="_blank" rel="noopener noreferrer" className="text-black underline">GitHub</a></span>
+                <span>
+                  Open an issue on{' '}
+                  <a
+                    href="https://github.com/Koushith/quite-inbox/issues"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-black underline"
+                  >
+                    GitHub
+                  </a>
+                </span>
               </li>
               <li className="flex items-start space-x-2">
                 <span className="text-black mt-1">•</span>
