@@ -32,9 +32,6 @@ export default function OnboardingPage() {
               <span className="text-lg font-semibold text-black">QuiteInbox</span>
             </div>
             <div className="flex items-center space-x-6">
-              <a href="#features" className="text-sm text-gray-600 hover:text-black">
-                Features
-              </a>
               <GitHubStars />
             </div>
           </div>
@@ -46,13 +43,9 @@ export default function OnboardingPage() {
         <div className="max-w-7xl mx-auto w-full px-6 lg:px-8 py-20 lg:py-24">
           <div className="max-w-4xl mx-auto text-center space-y-8">
             {/* Badge */}
-            <div className="inline-flex items-center space-x-2 bg-gray-100 rounded-full px-4 py-2 text-sm">
-              <Shield className="h-4 w-4 text-black" />
-              <span className="text-black font-medium">100% Free • Open Source • Privacy First</span>
-            </div>
 
             {/* Main Headline */}
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-black leading-[1.05] tracking-tight">
+            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-black leading-[1.05] tracking-tight mt-10">
               Take Back Control
               <br />
               Of Your Inbox
@@ -244,18 +237,14 @@ export default function OnboardingPage() {
             {/* Section Header */}
             <div className="text-center mb-12 lg:mb-16">
               <h2 className="text-4xl lg:text-5xl font-bold text-black mb-4">Frequently Asked Questions</h2>
-              <p className="text-lg text-gray-600">
-                Everything you need to know about QuiteInbox
-              </p>
+              <p className="text-lg text-gray-600">Everything you need to know about QuiteInbox</p>
             </div>
 
             {/* FAQ Items */}
             <div className="space-y-8">
               {/* FAQ 1 */}
               <div className="bg-white rounded-lg border border-gray-200 p-6 lg:p-8">
-                <h3 className="text-lg lg:text-xl font-semibold text-black mb-3">
-                  Is QuiteInbox really free?
-                </h3>
+                <h3 className="text-lg lg:text-xl font-semibold text-black mb-3">Is QuiteInbox really free?</h3>
                 <p className="text-gray-600 leading-relaxed">
                   Yes, QuiteInbox is 100% free and open-source. No paid plans, no upsells.
                 </p>
@@ -267,7 +256,8 @@ export default function OnboardingPage() {
                   Does QuiteInbox work with non-Gmail accounts?
                 </h3>
                 <p className="text-gray-600 leading-relaxed">
-                  Not currently. QuiteInbox uses the Gmail API and is designed specifically for Gmail accounts. IMAP support may be added in the future.
+                  Not currently. QuiteInbox uses the Gmail API and is designed specifically for Gmail accounts. IMAP
+                  support may be added in the future.
                 </p>
               </div>
 
@@ -277,7 +267,8 @@ export default function OnboardingPage() {
                   What happens if I delete QuiteInbox?
                 </h3>
                 <p className="text-gray-600 leading-relaxed">
-                  All data is stored locally in your browser's IndexedDB. If you clear your browser data or uninstall QuiteInbox, the data is permanently deleted. You can export your data before doing so.
+                  All data is stored locally in your browser's IndexedDB. If you clear your browser data or uninstall
+                  QuiteInbox, the data is permanently deleted. You can export your data before doing so.
                 </p>
               </div>
 
@@ -287,7 +278,8 @@ export default function OnboardingPage() {
                   Can I use QuiteInbox on multiple devices?
                 </h3>
                 <p className="text-gray-600 leading-relaxed">
-                  Each device stores its own local data. There's no sync between devices. You can export/import settings and action logs manually.
+                  Each device stores its own local data. There's no sync between devices. You can export/import settings
+                  and action logs manually.
                 </p>
               </div>
 
@@ -314,7 +306,7 @@ export default function OnboardingPage() {
               <div className="space-y-2">
                 <h2 className="text-2xl sm:text-3xl font-bold text-black">Connect Your Gmail</h2>
                 <p className="text-gray-600 text-sm sm:text-base">
-                  QuiteInbox needs these permissions to work. Don't worry—everything runs locally in your browser.
+                  QuiteInbox needs these permissions to work. Don't worry, everything runs locally in your browser.
                 </p>
               </div>
 
