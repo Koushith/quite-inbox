@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { startOAuthFlow, GMAIL_SCOPES } from '@/lib/auth/oauth';
 import { Button } from '@/components/ui/button';
 import { Mail, Shield, Zap, Trash2, Lock, Code } from 'lucide-react';
@@ -415,12 +416,12 @@ export default function OnboardingPage() {
               >
                 GitHub
               </a>
-              <a href="#" className="text-sm text-gray-600 hover:text-black">
+              <Link to="/privacy" className="text-sm text-gray-600 hover:text-black">
                 Privacy
-              </a>
-              <a href="#" className="text-sm text-gray-600 hover:text-black">
+              </Link>
+              <Link to="/terms" className="text-sm text-gray-600 hover:text-black">
                 Terms
-              </a>
+              </Link>
             </div>
           </div>
         </div>

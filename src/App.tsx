@@ -11,6 +11,8 @@ import ActivityPage from './routes/Activity'
 import SettingsPage from './routes/Settings'
 import ReportPage from './routes/Report'
 import OAuthCallback from './routes/OAuthCallback'
+import PrivacyPage from './routes/Privacy'
+import TermsPage from './routes/Terms'
 
 function App() {
   const { isAuthenticated, checkAuth, theme, setTheme } = useAppStore()
@@ -30,6 +32,10 @@ function App() {
         <Routes>
           {/* OAuth callback */}
           <Route path="/oauth/callback" element={<OAuthCallback />} />
+
+          {/* Public routes */}
+          <Route path="/privacy" element={<PrivacyPage />} />
+          <Route path="/terms" element={<TermsPage />} />
 
           {/* Protected routes */}
           {isAuthenticated ? (
