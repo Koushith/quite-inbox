@@ -13,6 +13,7 @@ import ReportPage from './routes/Report'
 import OAuthCallback from './routes/OAuthCallback'
 import PrivacyPage from './routes/Privacy'
 import TermsPage from './routes/Terms'
+import SecurityPage from './routes/Security'
 
 function App() {
   const { isAuthenticated, checkAuth, theme, setTheme } = useAppStore()
@@ -36,6 +37,7 @@ function App() {
           {/* Public routes */}
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/terms" element={<TermsPage />} />
+          <Route path="/security" element={<SecurityPage />} />
 
           {/* Protected routes */}
           {isAuthenticated ? (

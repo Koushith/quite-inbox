@@ -416,6 +416,9 @@ export default function OnboardingPage() {
               >
                 GitHub
               </a>
+              <Link to="/security" className="text-sm text-gray-600 hover:text-black">
+                Security
+              </Link>
               <Link to="/privacy" className="text-sm text-gray-600 hover:text-black">
                 Privacy
               </Link>
