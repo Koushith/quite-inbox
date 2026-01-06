@@ -4,6 +4,10 @@ import { startOAuthFlow, GMAIL_SCOPES } from '@/lib/auth/oauth';
 import { Button } from '@/components/ui/button';
 import { Mail, Shield, Zap, Trash2, Lock, Code } from 'lucide-react';
 import { GitHubStars } from '@/components/GitHubStars';
+import heroOverflow from '@/assets/images/hero-overflow.png';
+import featureFind from '@/assets/images/feature-find.png';
+import featureUnsubscribe from '@/assets/images/feature-unsubscribe.png';
+import featureCleanup from '@/assets/images/feature-cleanup.png';
 
 export default function OnboardingPage() {
   const [showPermissions, setShowPermissions] = useState(false);
@@ -101,7 +105,7 @@ export default function OnboardingPage() {
             <div className="pt-16 pb-8">
               <div className="relative max-w-2xl mx-auto">
                 <img
-                  src="https://notioly.com/wp-content/uploads/2025/03/516.Inbox-Overflowing.png"
+                  src={heroOverflow}
                   alt="Inbox Overflowing"
                   className="w-full h-auto"
                 />
@@ -151,7 +155,7 @@ export default function OnboardingPage() {
               </div>
               <div className="flex items-center justify-center">
                 <img
-                  src="https://notioly.com/wp-content/uploads/2024/06/412.New-Email.png"
+                  src={featureFind}
                   alt="Find Subscriptions"
                   className="w-full max-w-md h-auto"
                 />
@@ -162,7 +166,7 @@ export default function OnboardingPage() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
               <div className="flex items-center justify-center lg:order-first">
                 <img
-                  src="https://notioly.com/wp-content/uploads/2024/04/385.Tasks_.png"
+                  src={featureUnsubscribe}
                   alt="Smart Unsubscribe"
                   className="w-full max-w-md h-auto"
                 />
@@ -221,7 +225,7 @@ export default function OnboardingPage() {
               </div>
               <div className="flex items-center justify-center">
                 <img
-                  src="https://notioly.com/wp-content/uploads/2024/03/365.Archive-Files.png"
+                  src={featureCleanup}
                   alt="Bulk Cleanup"
                   className="w-full max-w-md h-auto"
                 />
